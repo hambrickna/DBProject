@@ -15,7 +15,7 @@ class User_
     void setUserName(string name);
     int getUserID() const;
     string getUserName() const;
-    
+
   private:
     int UserID;
     char UserName[MAX_SIZE];
@@ -24,12 +24,12 @@ class User_
 class Collection
 {
   public:
-    Collection(string name="", int cid=0, int num=0, int uid=0);
+    Collection(string name="", int cid=0, int uid=0);
     ~Collection();
     void setCollectionTitle(string name);
     void setCollectionID(int id);
     void setNumEntries(int num);
-    int setUserID(int id);
+    void setUserID(int id);
     string getCollectionTitle();
     int getCollectionID();
     int getNumEntries();
@@ -44,7 +44,7 @@ class Collection
 class Entry
 {
   public:
-    Entry(string title="", int year=0, string format="", string condition="Fair", int upc=0, string label="");
+    Entry(string title="", int year=0, string format="", string condition="Fair", int upc=0, string label="", int cid=0);
     ~Entry();
     void setEntryTitle(string title);
     void setYear(int year);
@@ -52,12 +52,15 @@ class Entry
     void setEntryCondition(string condition);
     void setEntryUPC(int upc);
     void setEntryLabel(string label);
+    void setCollectionID(int cid);
     string getEntryTitle();
     int getYear();
     string getEntryFormat();
     string getEntryCondition();
     int getEntryUPC();
     string getEntryLabel();
+    int getCollectionID();
+
   private:
     char EntryTitle[MAX_SIZE];
     int EntryYear;
@@ -65,6 +68,7 @@ class Entry
     char EntryCondition[9];
     int EntryUPC;
     char EntryLabel[MAX_SIZE];
+    int CollectionID;
 };
 
 class Track
@@ -93,15 +97,18 @@ class Track
 class Artist
 {
   public:
-    Artist(int id=0, string name="");
+    Artist(int id=0, string name="", int upc=0);
     ~Artist();
     void setArtistID(int id);
     void setArtistName(string name);
+    void setEntryUPC(int upc);
+    int getEntryUPC();
     int getArtistID();
     string getArtistName();
   private:
     int ArtistID;
     char ArtistName[MAX_SIZE];
+    int EntryUPC;
 };
 
 class Entry_Genre
@@ -161,5 +168,3 @@ class Collection_contains_entry
 };
 
 #endif
-
-

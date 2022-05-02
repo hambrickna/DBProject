@@ -11,7 +11,7 @@ Functions::Functions(string host, string user, string password, string database)
   db_conn = mysql_init(NULL);
   if (!db_conn)
       message("MySQL initialization failed! ");
-  db_conn = mysql_real_connect(db_conn, host.c_str(), user.c_str(), password.c_str(), 
+  db_conn = mysql_real_connect(db_conn, host.c_str(), user.c_str(), password.c_str(),
                                database.c_str(), 0, NULL, 0);
   if(!db_conn)
     message("Connection Error! ");
@@ -48,14 +48,15 @@ void Functions::createCollection(Collection* collection)
 void Functions::createEntry(Entry* entry)
 {
   stringstream ss;
-  ss << "INSERT INTO Entry(Entry_title, Entry_year, Entry_format, Entry_condition, Entry_UPC, Entry_label)"
+  ss << "INSERT INTO Entry(Entry_title, Entry_year, Entry_format, Entry_condition, Entry_UPC, Entry_label, Collection_ID)"
      << "values (''"
      << entry->getEntryTitle() << "', "
      << entry->getYear() << ", '"
      << entry->getEntryFormat() << "', '"
      << entry->getEntryCondition() << ", "
      << entry->getEntryUPC() << ", '"
-     << entry->getEntryLabel()
+     << entry->getEntryLabel() << ", '"
+     << entry->getCollectionID()
      << "')";
   if (mysql_query(db_conn, ss.str().c_str()))
       message("Failure");
@@ -68,9 +69,9 @@ void Functions::createTrack(Track* track)
   ss << "INSERT INTO Track(Track_ID, Track_title, Track_length, Track_number, Entry_UPC"
      << "values ("
      << track->getTrackID() << ", '"
-     << track->getTrackTitle() << "', " 
+     << track->getTrackTitle() << "', "
      << track->getTrackLength() << ", "
-     << track->getTrackNumber() << ", " 
+     << track->getTrackNumber() << ", "
      << track->getEntryUPC()
      << ")";
   if (mysql_query(db_conn, ss.str().c_str()))
@@ -81,10 +82,11 @@ void Functions::createTrack(Track* track)
 void Functions::createArtist(Artist* artist)
 {
   stringstream ss;
-  ss << "INSERT INTO Artist(Artist_ID, Artist_name)"
+  ss << "INSERT INTO Artist(Artist_ID, Artist_name, Entry_UPC)"
      << "values ("
      << artist->getArtistID() << ", '"
-     << artist->getArtistName()
+     << artist->getArtistName() << ", '"
+     << artist->getEntryUPC()
      << "')";
   if (mysql_query(db_conn, ss.str().c_str()))
       message("Failure");
@@ -237,7 +239,7 @@ void Functions::deleteCollectionContainsEntry(int cid,int upc)
       message("Collection_contains_entry removed successfully.");
 }
 
-//Get Functions 
+//Get Functions
 User_* Functions::getUser(int uid)
 {
   User_* U = NULL;
@@ -293,8 +295,9 @@ Entry* Functions::getEntry(int upc)
     E->setYear(atoi(row[1]));
     E->setEntryFormat(row[2]);
     E->setEntryCondition(row[3]);
-    E->setEntryUPC(row[4]);
+    E->setEntryUPC(atoi(row[4]));
     E->setEntryLabel(row[5]);
+    E->setCollectionID(atoi(row[6]));
   }
   mysql_free_result(rset);
   return E;
@@ -336,6 +339,7 @@ Artist* Functions::getArtist(int aid)
     row = mysql_fetch_row(rset);
     A->setArtistID(atoi(row[0]));
     A->setArtistName(row[1]);
+    A->setEntryUPC(atoi(row[2]));
   }
   mysql_free_result(rset);
   return A;
@@ -422,16 +426,16 @@ void Functions::printAllUser()
   MYSQL_RES* rset;
   MYSQL_ROW rows;
   string sql = "SELECT * FROM User_";
-  if(mysql_query(db_conn, sql.c_str())) 
+  if(mysql_query(db_conn, sql.c_str()))
   {
     message("Error printing! ");
     return;
   }
   rset = mysql_use_result(db_conn);
   cout << "UserName | UserID" << endl;
-  if(rset) 
+  if(rset)
   {
-    while((rows = mysql_fetch_row(rset))) 
+    while((rows = mysql_fetch_row(rset)))
     {
        cout << rows[0]
             << " | " << rows[1]
@@ -446,16 +450,16 @@ void Functions::printAllCollection()
   MYSQL_RES* rset;
   MYSQL_ROW rows;
   string sql = "SELECT * FROM Collection";
-  if(mysql_query(db_conn, sql.c_str())) 
+  if(mysql_query(db_conn, sql.c_str()))
   {
     message("Error printing! ");
     return;
   }
   rset = mysql_use_result(db_conn);
   cout << "Collection_Title | Collection_ID | User_ID" << endl;
-  if(rset) 
+  if(rset)
   {
-    while((rows = mysql_fetch_row(rset))) 
+    while((rows = mysql_fetch_row(rset)))
     {
        cout << rows[0]
             << " | " << rows[1]
@@ -470,16 +474,16 @@ void Functions::printAllEntry()
   MYSQL_RES* rset;
   MYSQL_ROW rows;
   string sql = "SELECT * FROM Entry";
-  if(mysql_query(db_conn, sql.c_str())) 
+  if(mysql_query(db_conn, sql.c_str()))
   {
     message("Error printing! ");
     return;
   }
   rset = mysql_use_result(db_conn);
   cout << "Entry_title | Entry_year | Entry_format | Condition | UPC | Label" << endl;
-  if(rset) 
+  if(rset)
   {
-    while((rows = mysql_fetch_row(rset))) 
+    while((rows = mysql_fetch_row(rset)))
     {
        cout << rows[0]
             << "| " << rows[1]
@@ -497,16 +501,16 @@ void Functions::printAllTrack()
   MYSQL_RES* rset;
   MYSQL_ROW rows;
   string sql = "SELECT * FROM Track";
-  if(mysql_query(db_conn, sql.c_str())) 
+  if(mysql_query(db_conn, sql.c_str()))
   {
     message("Error printing! ");
     return;
   }
   rset = mysql_use_result(db_conn);
   cout << "Track_ID | Track_title | Track_length | Track_number | Entry_UPC" << endl;
-  if(rset) 
+  if(rset)
   {
-    while((rows = mysql_fetch_row(rset))) 
+    while((rows = mysql_fetch_row(rset)))
     {
        cout << rows[0]
             << " | " << rows[1]
@@ -523,16 +527,16 @@ void Functions::printAllArtist()
   MYSQL_RES* rset;
   MYSQL_ROW rows;
   string sql = "SELECT * FROM Artist";
-  if(mysql_query(db_conn, sql.c_str())) 
+  if(mysql_query(db_conn, sql.c_str()))
   {
     message("Error printing! ");
     return;
   }
   rset = mysql_use_result(db_conn);
   cout << "Artist_ID | Artist_name" << endl;
-  if(rset) 
+  if(rset)
   {
-    while((rows = mysql_fetch_row(rset))) 
+    while((rows = mysql_fetch_row(rset)))
     {
        cout << rows[0]
             << " | " << rows[1]
@@ -546,16 +550,16 @@ void Functions::printAllEntryGenre()
   MYSQL_RES* rset;
   MYSQL_ROW rows;
   string sql = "SELECT * FROM Entry_Genre";
-  if(mysql_query(db_conn, sql.c_str())) 
+  if(mysql_query(db_conn, sql.c_str()))
   {
     message("Error printing! ");
     return;
   }
   rset = mysql_use_result(db_conn);
   cout << "Entry_UPC | Genre" << endl;
-  if(rset) 
+  if(rset)
   {
-    while((rows = mysql_fetch_row(rset))) 
+    while((rows = mysql_fetch_row(rset)))
     {
        cout << rows[0]
             << " | " << rows[1]
@@ -569,16 +573,16 @@ void Functions::printAllTrackGenre()
   MYSQL_RES* rset;
   MYSQL_ROW rows;
   string sql = "SELECT * FROM Track_Genre";
-  if(mysql_query(db_conn, sql.c_str())) 
+  if(mysql_query(db_conn, sql.c_str()))
   {
     message("Error printing! ");
     return;
   }
   rset = mysql_use_result(db_conn);
   cout << "Track_ID | Genre" << endl;
-  if(rset) 
+  if(rset)
   {
-    while((rows = mysql_fetch_row(rset))) 
+    while((rows = mysql_fetch_row(rset)))
     {
        cout << rows[0]
             << " | " << rows[1]
@@ -592,16 +596,16 @@ void Functions::printAllArtistMembers()
   MYSQL_RES* rset;
   MYSQL_ROW rows;
   string sql = "SELECT * FROM Artist_members";
-  if(mysql_query(db_conn, sql.c_str())) 
+  if(mysql_query(db_conn, sql.c_str()))
   {
     message("Error printing! ");
     return;
   }
   rset = mysql_use_result(db_conn);
   cout << "Artist_ID | Member_name" << endl;
-  if(rset) 
+  if(rset)
   {
-    while((rows = mysql_fetch_row(rset))) 
+    while((rows = mysql_fetch_row(rset)))
     {
        cout << rows[0]
             << " | " << rows[1]
@@ -615,16 +619,16 @@ void Functions::printAllCollectionContainsEntry()
   MYSQL_RES* rset;
   MYSQL_ROW rows;
   string sql = "SELECT * FROM Collection_contains_entry";
-  if(mysql_query(db_conn, sql.c_str())) 
+  if(mysql_query(db_conn, sql.c_str()))
   {
     message("Error printing! ");
     return;
   }
   rset = mysql_use_result(db_conn);
   cout << "Collection_ID | Entry_UPC" << endl;
-  if(rset) 
+  if(rset)
   {
-    while((rows = mysql_fetch_row(rset))) 
+    while((rows = mysql_fetch_row(rset)))
     {
        cout << rows[0]
             << " | " << rows[1]
@@ -635,36 +639,37 @@ void Functions::printAllCollectionContainsEntry()
 }
 ///////////////////////////////////////////////////////////
 
-void Functions::printUser(int uid);
-void Functions::printCollectionsFromUser(int uid);
-void Functions::printEntriesFromCollection(int cid);
-void Functions::printTracksFromEntry(int upc);
-void Functions::printArtistFromEntry(int upc);
-void Functions::printEntryGenre(int upc);
-void Functions::printTrackGenre(int tid);
-void Functions::printArtistMembersFromArtist(int aid)
-{
-  MYSQL_RES* rset;
-  MYSQL_ROW rows;
-  string sql = "SELECT * FROM Artist_members WHERE Artist_ID=" << aid;
-  if(mysql_query(db_conn, sql.c_str())) 
-  {
-    message("Error printing! ");
-    return;
-  }
-  rset = mysql_use_result(db_conn);
-  cout << "Artist_ID | Member_name" << endl;
-  if(rset) 
-  {
-    while((rows = mysql_fetch_row(rset))) 
-    {
-       cout << rows[0]
-            << " | " << rows[1]
-            << endl;
-    }
-  }
-  mysql_free_result(rset);
-}
+// void Functions::printUser(int uid);
+// void Functions::printCollectionsFromUser(int uid);
+// void Functions::printEntriesFromCollection(int cid);
+// void Functions::printTracksFromEntry(int upc);
+// void Functions::printArtistFromEntry(int upc);
+// void Functions::printEntryGenre(int upc);
+// void Functions::printTrackGenre(int tid);
+//
+// void Functions::printArtistMembersFromArtist(int aid)
+// {
+//   MYSQL_RES* rset;
+//   MYSQL_ROW rows;
+//   string sql = "SELECT * FROM Artist_members WHERE Artist_ID=" << to_string(aid);
+//   if(mysql_query(db_conn, sql.c_str()))
+//   {
+//     message("Error printing! ");
+//     return;
+//   }
+//   rset = mysql_use_result(db_conn);
+//   cout << "Artist_ID | Member_name" << endl;
+//   if(rset)
+//   {
+//     while((rows = mysql_fetch_row(rset)))
+//     {
+//        cout << rows[0]
+//             << " | " << rows[1]
+//             << endl;
+//     }
+//   }
+//   mysql_free_result(rset);
+// }
 //////////////////////////////////////////////////////////
 void Functions::message(string msg)
 {

@@ -1,7 +1,7 @@
 #ifndef FUNCTIONS_H
 #define FUNCTIONS_H
 
-#include <mysql.h>
+#include <mysql/mysql.h>
 #include <string>
 
 class User_;
@@ -29,7 +29,7 @@ class Functions
     void createTrackGenre(Track_Genre* tgen);
     void createArtistMembers(Artist_members* amem);
     void createCollectionContainsEntry(Collection_contains_entry* cce);
-    
+
     void deleteUser(int uid);
     void deleteCollection(int cid);
     void deleteEntry(int upc);

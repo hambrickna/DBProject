@@ -4,7 +4,7 @@
 #include <string>
 using std::string;
 #include <cstring>
-{
+
 User_::User_(int id,string name)
 {
   setUserID(id);
@@ -30,13 +30,11 @@ string User_::getUserName() const
 {
   return UserName;
 }
-}  //User
-{
-Collection::Collection(string name, int cid, int num, int uid)
+
+Collection::Collection(string name, int cid, int uid)
 {
   setCollectionTitle(name);
   setCollectionID(cid);
-  setNumEntries(num);
   setUserID(uid);
 }
 void Collection::setCollectionTitle(string name)
@@ -55,7 +53,7 @@ void Collection::setNumEntries(int num)
 {
   NumEntries=num;
 }
-int Collection::setUserID(int id)
+void Collection::setUserID(int id)
 {
   UserID=id;
 }
@@ -75,9 +73,7 @@ int Collection::getUserID()
 {
   return UserID;
 }
-}  //Collection
-{
-Entry::Entry(string title, int year, string format, string condition, int upc, string label)
+Entry::Entry(string title, int year, string format, string condition, int upc, string label, int cid)
 {
   setEntryTitle(title);
   setYear(year);
@@ -85,6 +81,7 @@ Entry::Entry(string title, int year, string format, string condition, int upc, s
   setEntryCondition(condition);
   setEntryUPC(upc);
   setEntryLabel(label);
+  setCollectionID(cid);
 }
 void Entry::setEntryTitle(string title)
 {
@@ -97,6 +94,11 @@ void Entry::setEntryTitle(string title)
 void Entry::setYear(int year)
 {
   EntryYear=year;
+}
+
+void Entry::setCollectionID(int cid)
+{
+  CollectionID = cid;
 }
 void Entry::setEntryFormat(string format)
 {
@@ -126,6 +128,11 @@ void Entry::setEntryLabel(string label)
   strncpy(EntryLabel, fn, len);
   EntryLabel[len] = '\0';
 }
+
+int Entry::getCollectionID()
+{
+  return CollectionID;
+}
 string Entry::getEntryTitle()
 {
   return EntryTitle;
@@ -150,8 +157,7 @@ string Entry::getEntryLabel()
 {
   return EntryLabel;
 }
-}  //Entry
-{
+
 Track::Track(int id, string title, int length, int num, int upc)
 {
   setTrackID(id);
@@ -204,12 +210,12 @@ int Track::getEntryUPC()
 {
   return EntryUPC;
 }
-}  //Track
-{
-Artist::Artist(int id, string name)
+
+Artist::Artist(int id, string name, int upc)
 {
   setArtistID(id);
   setArtistName(name);
+  setEntryUPC(upc);
 }
 void Artist::setArtistID(int id)
 {
@@ -223,6 +229,14 @@ void Artist::setArtistName(string name)
   strncpy(ArtistName, ln, len);
   ArtistName[len] = '\0';
 }
+void Artist::setEntryUPC(int upc)
+{
+  EntryUPC = upc;
+}
+int Artist::getEntryUPC()
+{
+  return EntryUPC;
+}
 int Artist::getArtistID()
 {
   return ArtistID;
@@ -231,8 +245,7 @@ string Artist::getArtistName()
 {
   return ArtistName;
 }
-}  //Artist
-{
+
 Entry_Genre::Entry_Genre(int upc, string genre)
 {
   setEntryUPC(upc);
@@ -258,8 +271,7 @@ string Entry_Genre::getGenre()
 {
   return Genre;
 }
-}  //Entry Genre
-{
+
 Track_Genre::Track_Genre(int id, string genre)
 {
   setTrackID(id);
@@ -285,8 +297,7 @@ string Track_Genre::getGenre()
 {
   return Genre;
 }
-}  //Track Genre
-{
+
 Artist_members::Artist_members(int ID, string members)
 {
   setArtistID(ID);
@@ -316,8 +327,7 @@ string Artist_members::getArtistMembers()
 {
   return ArtistMembers;
 }
-  }  //Artist Members
-{
+
 Collection_contains_entry::Collection_contains_entry(int CollectionID, int EntryUPC)
 {
   setCollectionID(CollectionID);
@@ -343,7 +353,7 @@ int Collection_contains_entry::getEntryUPC()
 {
   return EntryUPC;
 }
-}  //Collection Contains Entry
+ //Collection Contains Entry
 
 //am back
 //ok
