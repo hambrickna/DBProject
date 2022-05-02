@@ -70,6 +70,8 @@ class Functions
     void printArtistMembersFromArtist(int aid);
 
     void message(string);
+    MYSQL* getConnection() {return db_conn;}
+    string h; // Testing/debugging variable IGNORE
   private:
     MYSQL* db_conn;
 };

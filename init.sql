@@ -69,3 +69,13 @@ CREATE TABLE Collection_contains_entry(
     FOREIGN KEY(Collection_ID) REFERENCES Collection(Collection_ID),
     FOREIGN KEY(Entry_UPC) REFERENCES Entry(Entry_UPC)
 );
+
+#Example Data
+
+INSERT INTO User_(User_name, User_ID)
+   values ("Bob", 001), ("Dave", 002), ("PianoMan", 003), ("Music Store", 004);
+
+INSERT INTO Collection(Collection_Title, Collection_ID, User_ID)
+   values ("Vinyls", 200, 001), ("Rock Mix", 201, 001), ("Pop Mix",
+		        202, 001), ("Emo Mix", 203, 001), ("My mix", 204, 002),
+					("Store1 Collection", 205, 004);

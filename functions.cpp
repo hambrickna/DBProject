@@ -8,6 +8,7 @@
 
 Functions::Functions(string host, string user, string password, string database)
 {
+  h = host;
   db_conn = mysql_init(NULL);
   if (!db_conn)
       message("MySQL initialization failed! ");
@@ -26,7 +27,7 @@ void Functions::createUser(User_* user)
 {
   stringstream ss;
   ss << "INSERT INTO User_(User_name, User_ID)"
-     << "values ('" << user->getUserName() << "', "
+     << " values ('" << user->getUserName() << "', "
      << user->getUserID() << ")";
   if (mysql_query(db_conn, ss.str().c_str()))
       message("Failure");
@@ -640,7 +641,29 @@ void Functions::printAllCollectionContainsEntry()
 ///////////////////////////////////////////////////////////
 
 // void Functions::printUser(int uid);
-// void Functions::printCollectionsFromUser(int uid);
+void Functions::printCollectionsFromUser(int uid)
+{
+  MYSQL_RES* rset;
+  MYSQL_ROW rows;
+  string sql = "SELECT * FROM Collection WHERE User_ID=";
+  sql += to_string(uid);
+
+  if (mysql_query(db_conn, sql.c_str()))
+  {
+    message("Error Printing! ");
+    return;
+  }
+  rset = mysql_use_result(db_conn);
+  cout << "\nCollection_Title | Collection_ID | User_ID" << endl;
+  if (rset)
+  {
+    while((rows = mysql_fetch_row(rset)))
+    {
+      cout << rows[0] << " \t\t|\t  " << rows[1] << " \t|\t " << rows[2] << endl;
+    }
+  }
+  mysql_free_result(rset);
+}
 // void Functions::printEntriesFromCollection(int cid);
 // void Functions::printTracksFromEntry(int upc);
 // void Functions::printArtistFromEntry(int upc);
@@ -671,6 +694,8 @@ void Functions::printAllCollectionContainsEntry()
 //   mysql_free_result(rset);
 // }
 //////////////////////////////////////////////////////////
+
+
 void Functions::message(string msg)
 {
   cout << msg << endl;
