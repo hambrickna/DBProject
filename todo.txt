@@ -1,0 +1,5 @@
+Revise SQL especially checks/foreign keys
+Add collectionid into entry on sql
+Add upc into artist
+
+Add User listing 

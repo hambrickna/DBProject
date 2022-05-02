@@ -5,10 +5,8 @@ CREATE TABLE User_(
 );
 
 CREATE TABLE Collection(
-	Date_Created DATE NOT NULL,
     Collection_Title VARCHAR(50) NOT NULL,
     Collection_ID INT UNSIGNED NOT NULL,
-    Num_entries INT UNSIGNED NOT NULL,
     User_ID INT UNSIGNED NOT NULL,
     PRIMARY KEY(Collection_ID),
     FOREIGN KEY(User_ID) REFERENCES User_(User_ID)
@@ -21,15 +19,17 @@ CREATE TABLE Entry(
     Entry_condition VARCHAR(9),
     Entry_UPC INT UNSIGNED NOT NULL,
     Entry_label VARCHAR(50) NOT NULL,
-    CHECK(Entry_condition='Very Good' OR Entry_condition='Good' OR Entry_condition='Fair' 
+		Collection_ID INT UNSIGNED NOT NULL,
+    CHECK(Entry_condition='Very Good' OR Entry_condition='Good' OR Entry_condition='Fair'
 			OR Entry_condition='Poor' OR Entry_condition='Very Poor'),
-    PRIMARY KEY(Entry_UPC)
+    PRIMARY KEY(Entry_UPC),
+		FOREIGN KEY(Collection_ID) REFERENCES Collection(Collection_ID)
 );
 
 CREATE TABLE Track(
 	Track_ID INT UNSIGNED NOT NULL,
 	Track_title VARCHAR(50) NOT NULL,
-    Track_length INT UNSIGNED NOT NULL, #In seconds
+    Track_length INT UNSIGNED NOT NULL, #Unit Seconds
     Track_number INT UNSIGNED NOT NULL,
     Entry_UPC INT UNSIGNED NOT NULL,
     PRIMARY KEY(Track_ID),
@@ -39,7 +39,9 @@ CREATE TABLE Track(
 CREATE TABLE Artist(
 	Artist_ID INT UNSIGNED NOT NULL,
     Artist_name VARCHAR(50) NOT NULL,
-    PRIMARY KEY(Artist_ID)
+		Entry_UPC INT UNSIGNED NOT NULL,
+    PRIMARY KEY(Artist_ID),
+		FOREIGN KEY(Entry_UPC) REFERENCES Track(Entry_UPC)
 );
 
 CREATE TABLE Entry_Genre(
@@ -67,14 +69,3 @@ CREATE TABLE Collection_contains_entry(
     FOREIGN KEY(Collection_ID) REFERENCES Collection(Collection_ID),
     FOREIGN KEY(Entry_UPC) REFERENCES Entry(Entry_UPC)
 );
-
-
-
-
-
-
-
-
-
-
-
