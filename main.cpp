@@ -30,8 +30,9 @@ using namespace std;
 void UserMenu(Functions* f);
 void CollectionMenu(int uid, Functions* f);
 void EntryMenu(int cid, Functions* f);
-void TrackMenu(int upc, Functions* f);
-void ArtistMenu(int upc, int aid, Functions* f);
+void TrackMenu(int eid, Functions* f);
+void ArtistMenu(int eid, Functions* f);
+void ArtistMembersMenu(int aid, Functions* f);
 
 void UserMenu(Functions* f)
 {
@@ -43,87 +44,155 @@ void UserMenu(Functions* f)
   int User_ID;
   int cid;
   int uid;
-
+  int option;
   f->printAllUser();
-  cout << "Select User (Enter User_ID or -1 for New User): ";
-  cin >> uid;
-
-  if (uid == -1) //Creating new User
+  cout << "\nOptions:-1 - Exit\n"
+       << "         0 - Delete User\n"
+       << "         1 - Add User\n"
+       << "         2 - Select User\n";
+  cin >> option;
+  switch(option)
   {
-    cout << "\nEnter New Username: ";
-    cin >> userName;
-    sql << "SELECT MAX(User_ID) FROM User_";
-    if (!mysql_query(f->getConnection(), sql.str().c_str()))
-    {
-      U = new User_();
-      rset = mysql_use_result(f->getConnection());
-      row = mysql_fetch_row(rset);
-      User_ID = stoi(row[0]);
-      mysql_free_result(rset); //Dont forget this
-    }
-    U->setUserID(User_ID + 1);
-    U->setUserName(userName);
-    f->createUser(U);
+    case -1:
+      exit(0);
+    case 0:
+      cout << "\nEnter User_ID to Delete: ";
+      cin >> uid;
+      //get all eid
+      //SELECT Entry_ID FROM Collection,Entry
+      //WHERE Entry.Collection_ID=Collection.Collection_ID AND Collection.User_ID={uid}
+      sql << "SELECT Entry_ID FROM Collection,Entry "
+          << "WHERE Entry.Collection_ID=Collection.Collection_ID AND Collection.User_ID="
+          << uid;
+      if(rset)
+      {
+        int i=0;
+        while((row = mysql_fetch_row(rset)))
+        {
+          int j = stoi(row[i]);
+          f->deleteAllTrackGenreFromEntry(j);
+          f->deleteAllTrackFromEntry(j);
+          f->deleteAllArtistFromEntry(j);
+          f->deleteEntry(j);
+          i++;
+        }
+      }
+      mysql_free_result(rset);
+      f->deleteAllCollectionFromUser(uid);
+      f->deleteUser(uid);
+      cout << "\nUser Deleted" << endl;
+      UserMenu(f);
+    case 1:
+      cout << "\nEnter New Username: ";
+      cin >> userName;
+      sql << "SELECT MAX(User_ID) FROM User_";
+      if (!mysql_query(f->getConnection(), sql.str().c_str()))
+      {
+        U = new User_();
+        rset = mysql_use_result(f->getConnection());
+        row = mysql_fetch_row(rset);
+        User_ID = stoi(row[0]);
+        mysql_free_result(rset);
+      }
+      U->setUserID(User_ID + 1);
+      U->setUserName(userName);
+      f->createUser(U);
+      UserMenu(f);
+    case 2:
+      cout << "\nEnter User_ID: ";
+      cin >> uid;
+      CollectionMenu(uid, f);
   }
-
-  else
-  {
-    //Say something
-    CollectionMenu(uid, f);
-  }
-
   return;
 }
 
 void CollectionMenu(int uid, Functions* f)
 {
-  int cid;
+  int cid, eid;
   string collectionTitle;
   Collection* C = NULL;
   stringstream sql;
   MYSQL_RES* rset;
   MYSQL_ROW row;
 
-
-
+  int option;
   f->printCollectionsFromUser(uid);
-  cout << "\nSelect Collection (Enter Collection_ID or\n"
-       << "-1 to make a new collection): ";
-  cin >> cid;
+  cout << "\nOptions:-1 - Go Back To Users\n"
+       << "         0 - Delete Collection\n"
+       << "         1 - Add Collection\n"
+       << "         2 - Select Collection\n";
+  cin >> option;
 
-
-
-  if (cid == -1)
+  switch(option)
   {
-    cout << "\nEnter New Collection Title: ";
-    cin >> collectionTitle;
-    sql << "SELECT MAX(Collection_ID) FROM Collection";
-    if (!mysql_query(f->getConnection(), sql.str().c_str()))
-    {
-      C = new Collection();
-      rset = mysql_use_result(f->getConnection());
-      row = mysql_fetch_row(rset);
-      cid = stoi(row[0]);
-      mysql_free_result(rset); //Dont forget this
-    }
-    C->setCollectionTitle(collectionTitle);
-    C->setCollectionID(cid + 1);
-    C->setUserID(uid);
-    f->createCollection(C);
+    case -1:
+      UserMenu(f);
+    case 0:
+      cout << "\nEnter Collection_ID to Delete: ";
+      cin >> cid;
+      //get all eid
+      //SELECT Entry_ID FROM Entry
+      //WHERE Collection.Collection_ID={id}
+      sql << "SELECT Entry_ID FROM Entry "
+          << "WHERE Collection.Collection_ID="
+          << cid;
+          cout << "Start Loop\n";
+      if (!mysql_query(f->getConnection(), sql.str().c_str()))
+      {
+        if(rset)
+        {
+          int i=0;
+          int j=0;
+          cout << "Actually start loop\n";
+          while((row = mysql_fetch_row(rset)))
+          {
+            j = stoi(row[i]);
+            cout << j << endl;
+            f->deleteAllTrackGenreFromEntry(j);
+            f->deleteAllTrackFromEntry(j);
+            f->deleteAllArtistFromEntry(j);
+            f->deleteEntry(j);
+            i++;
+          }
+        }
+        mysql_free_result(rset);
+      }
+      cout << "post free result";
+      //remove cid
+      f->deleteCollection(cid);
+      cout << "\nCollection Deleted" << endl;
+      CollectionMenu(uid,f);
+    case 1:
+      cout << "\nEnter New Collection Name: ";
+      cin.ignore();
+      getline(cin,collectionTitle);
+      sql << "SELECT MAX(Collection_ID) FROM Collection";
+      if (!mysql_query(f->getConnection(), sql.str().c_str()))
+      {
+        C = new Collection();
+        rset = mysql_use_result(f->getConnection());
+        row = mysql_fetch_row(rset);
+        cid = stoi(row[0]);
+        mysql_free_result(rset);
+      }
+      C->setCollectionID(cid + 1);
+      C->setCollectionTitle(collectionTitle);
+      C->setUserID(uid);
+      f->createCollection(C);
+      CollectionMenu(uid,f);
+    case 2:
+      cout << "\nEnter Collection_ID: ";
+      cin >> cid;
+      EntryMenu(cid, f);
   }
-
-  else
-  {
-    EntryMenu(cid, f);
-  }
-
+  return;
 }
 
 void EntryMenu(int cid, Functions* f)
 {
   int uid;
   int option;
-  int upc;
+  int eid = 300;
   int Entry_ID;
   int Artist_ID;
   string title;
@@ -140,11 +209,12 @@ void EntryMenu(int cid, Functions* f)
 
   f->printEntriesFromCollection(cid);
 
-  cout << "Options:-1 - Go Back\n"
+  cout << "\nOptions:-1 - Go Back\n"
        << "         0 - Delete Entry\n"
        << "         1 - Add Entry\n"
        << "         2 - Select Entry\n"
-       << "         3 - Select Artist\n";
+       << "         3 - See Artists In Collection\n"
+       << "         4 - See Entry Genres\n";
   cin >> option;
 
   switch(option)
@@ -163,38 +233,54 @@ void EntryMenu(int cid, Functions* f)
       CollectionMenu(uid, f);
 
     case 0:
-      cout << "\nWhich Entry? (Enter Entry_UPC): ";
-      cin >> upc;
-      f->deleteEntry(upc);
+      cout << "\nWhich Entry? (Enter Entry_ID): ";
+      cin >> eid;
+      f->deleteAllTrackGenreFromEntry(eid);
+      f->deleteAllTrackFromEntry(eid);
+      f->deleteAllArtistFromEntry(eid);
+      f->deleteEntry(eid);
       EntryMenu(cid, f);
 
     case 1:
       cout << "\nEnter Entry Title: ";
-      cin  >> entryTitle;
+      cin.ignore();
+      getline(cin,entryTitle);
       cout << "\nEnter Entry year: ";
       cin >> year;
-      cout << "\nEnter Entry format (Vinyl, Tape, CD, Digital): ";
+      cout << year;
+      cout << "\nEnter Entry format (Album, ep, single, etc..): ";
       cin >> format;
+      cout << format;
       cout << "\nEnter Entry condition (Very Good, Good, Fair, Poor,\n"
            <<    "                      Very Poor): ";
-      cin >> condition;
-
-
-      sql << "SELECT MAX(Entry_UPC) FROM Entry";
+      cin.ignore();
+      getline(cin, condition);
+      cout << condition;
+      cout << "\nEnter Entry label: ";
+      getline(cin, label);
+      cout << label;
+      sql << "SELECT MAX(Entry_ID) FROM Entry";
       if (!mysql_query(f->getConnection(), sql.str().c_str()))
       {
         E = new Entry();
         rset = mysql_use_result(f->getConnection());
         row = mysql_fetch_row(rset);
-        upc = stoi(row[0]);
+        if (row[0] != NULL)
+          eid = stoi(row[0]);
+        else
+        {
+          eid = 299;
+        }
         mysql_free_result(rset); //Dont forget this
       }
-      E->setEntryUPC(upc + 1);
+
+      E->setEntryID(eid + 1);
       E->setEntryLabel(label);
-      E->setEntryTitle(title);
+      E->setEntryTitle(entryTitle);
       E->setEntryFormat(format);
       E->setEntryCondition(condition);
       E->setYear(year);
+      E->setCollectionID(cid);
       f->createEntry(E);
       EntryMenu(cid, f);
 
@@ -204,39 +290,170 @@ void EntryMenu(int cid, Functions* f)
       TrackMenu(Entry_ID, f);
 
     case 3:
-      cout << "Enter Artist_ID: ";
-      cin >> Artist_ID;
-      ArtistMenu(upc, Artist_ID, f);
-
-
-
-
+      sql << "SELECT Artist.Artist_ID, Artist.Artist_name, Artist.Entry_ID "
+          << "FROM Collection, Entry, Artist WHERE Collection.Collection_ID="
+          << cid << " AND Artist.Entry_ID=Entry.Entry_ID";
+      if(!mysql_query(f->getConnection(), sql.str().c_str()))
+      {
+        Artist* a = new Artist();
+        rset = mysql_use_result(f->getConnection());
+        row = mysql_fetch_row(rset);
+        cout << "\nArtist_ID | Artist_name | Entry_ID" << endl;
+        if (rset)
+        {
+          while((row = mysql_fetch_row(rset)))
+          {
+            cout << row[0] << " \t\t|\t  " << row[1] << " \t|\t " << row[2] << endl;
+          }
+        }
+        mysql_free_result(rset);
+      }
+      EntryMenu(cid, f);
+    case 4:
+      f->printEntryGenre(eid);
   }
-
-
-
+  return;
 }
 
-void TrackMenu(int upc, Functions* f)
+void TrackMenu(int eid, Functions* f)
 {
-
+  int tid, option, length, number;
+  string title;
+  stringstream sql;
+  MYSQL_RES* rset;
+  MYSQL_ROW row;
+  Track* T = NULL;
+  f->printTracksFromEntry(eid);
+  cout << "\nOptions:-1 - Go Back\n"
+       << "         0 - Delete Track\n"
+       << "         1 - Add Track\n"
+       << "         2 - See Track Genres\n";
+  cin >> option;
+  switch(option)
+  {
+    case -1:
+      EntryMenu(eid,f);
+    case 0:
+      cout << "\nEnter Track to Delete: ";
+      cin >> tid;
+      f->deleteTrack(tid);
+      cout << "\nTrack Deleted" << endl;
+      TrackMenu(eid,f);
+    case 1:
+      cout << "\nEnter Track Title: ";
+      getline(cin,title);
+      cout << "\nEnter Track length (seconds): ";
+      cin >> length;
+      sql << "SELECT MAX(Track_ID) FROM Track WHERE Entry_ID=" << eid;
+      if (!mysql_query(f->getConnection(), sql.str().c_str()))
+      {
+        T = new Track();
+        rset = mysql_use_result(f->getConnection());
+        row = mysql_fetch_row(rset);
+        tid = stoi(row[0]);
+        mysql_free_result(rset); //Dont forget this
+      }
+      T->setEntryID(eid);
+      T->setTrackTitle(title);
+      T->setTrackID(tid+1);
+      T->setTrackLength(length);
+      f->createTrack(T);
+      TrackMenu(eid, f);
+    case 2:
+      cout << "\nEnter Track_ID: ";
+      cin >> tid;
+      f->printTrackGenre(tid);
+  }
+  return;
 }
 
-void ArtistMenu(int Entry_UPC, int aid, Functions* f)
+void ArtistMenu(int eid, Functions* f)
 {
-
+  int option,aid;
+  string name;
+  stringstream sql;
+  MYSQL_RES* rset;
+  MYSQL_ROW row;
+  Artist* A = NULL;
+  f->printArtistFromEntry(eid);
+  cout << "\nOptions:-1 - Go Back\n"
+       << "         0 - Delete Artist\n"
+       << "         1 - Add Artist\n"
+       << "         2 - Select Artist Members\n";
+  cin >> option;
+  switch(option)
+  {
+    case -1:
+      EntryMenu(eid,f);
+    case 0:
+      cout << "\nEnter Artist to Delete: ";
+      cin >> aid;
+      f->deleteArtistMembers(aid);
+      f->deleteArtist(aid);
+      cout << "\nArtist Deleted" << endl;
+      ArtistMenu(eid,f);
+    case 1:
+      cout << "\nEnter Artist Name: ";
+      getline(cin,name);
+      sql << "SELECT MAX(Artist_ID) FROM Artist";
+      if (!mysql_query(f->getConnection(), sql.str().c_str()))
+      {
+        A = new Artist();
+        rset = mysql_use_result(f->getConnection());
+        row = mysql_fetch_row(rset);
+        aid = stoi(row[0]);
+        mysql_free_result(rset); //Dont forget this
+      }
+      A->setEntryID(eid);
+      A->setArtistName(name);
+      A->setArtistID(aid+1);
+      f->createArtist(A);
+      ArtistMenu(eid, f);
+    case 2:
+      cout << "\nEnter Artist_ID: ";
+      cin >> aid;
+      ArtistMembersMenu(aid, f);
+  }
+  return;
 }
 
-void Artist_members(int aid)
+void ArtistMembersMenu(int aid, Functions* f)
 {
-
+  int option, amid;
+  string name;
+  stringstream sql;
+  MYSQL_RES* rset;
+  MYSQL_ROW row;
+  Artist_members* Am = NULL;
+  f->printArtistMembersFromArtist(aid);
+  cout << "\nOptions:-1 - Go Back\n"
+       << "         0 - Delete Member\n"
+       << "         1 - Add Member\n";
+  cin >> option;
+  switch(option)
+  {
+    case -1:
+      ArtistMenu(aid,f);
+    case 0:
+      cout << "\nEnter Artist Member to Delete: ";
+      getline(cin, name);
+      f->deleteOneArtistMember(name);
+      cout << "\nArtist Deleted" << endl;
+      ArtistMembersMenu(aid, f);
+    case 1:
+      cout << "\nEnter Artist Name: ";
+      getline(cin,name);
+      Am = new Artist_members();
+      Am->setArtistID(aid);
+      Am->setArtistMembers(name);
+      f->createArtistMembers(Am);
+      ArtistMembersMenu(aid, f);
+  }
+  return;
 }
 
 int main(int argc, char** argv) {
-  int choice;
-  int uid;
-  string userName;
-  stringstream ss;
+
 
   Functions* f = new Functions("localhost", "root",
                                 "Na228513!", "MusicCollection");

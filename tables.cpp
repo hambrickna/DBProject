@@ -73,13 +73,13 @@ int Collection::getUserID()
 {
   return UserID;
 }
-Entry::Entry(string title, int year, string format, string condition, int upc, string label, int cid)
+Entry::Entry(string title, int year, string format, string condition, int eid, string label, int cid)
 {
   setEntryTitle(title);
   setYear(year);
   setEntryFormat(format);
   setEntryCondition(condition);
-  setEntryUPC(upc);
+  setEntryID(eid);
   setEntryLabel(label);
   setCollectionID(cid);
 }
@@ -112,13 +112,13 @@ void Entry::setEntryCondition(string condition)
 {
   const char* fn = condition.data();
   int len = condition.size();
-  len = (len < 9 ? len : 9 - 1);
+  len = (len < 10 ? len : 10 - 1);
   strncpy(EntryCondition, fn, len);
   EntryCondition[len] = '\0';
 }
-void Entry::setEntryUPC(int upc)
+void Entry::setEntryID(int eid)
 {
-  EntryUPC=upc;
+  EntryID=eid;
 }
 void Entry::setEntryLabel(string label)
 {
@@ -149,22 +149,22 @@ string Entry::getEntryCondition()
 {
   return EntryCondition;
 }
-int Entry::getEntryUPC()
+int Entry::getEntryID()
 {
-  return EntryUPC;
+  return EntryID;
 }
 string Entry::getEntryLabel()
 {
   return EntryLabel;
 }
 
-Track::Track(int id, string title, int length, int num, int upc)
+Track::Track(int id, string title, int length, int num, int eid)
 {
   setTrackID(id);
   setTrackTitle(title);
   setTrackLength(length);
   setTrackNumber(num);
-  setEntryUPC(upc);
+  setEntryID(eid);
 }
 void Track::setTrackID(int id)
 {
@@ -186,9 +186,9 @@ void Track::setTrackNumber(int num)
 {
   TrackNumber=num;
 }
-void Track::setEntryUPC(int upc)
+void Track::setEntryID(int eid)
 {
-  EntryUPC=upc;
+  EntryID=eid;
 }
 int Track::getTrackID()
 {
@@ -206,16 +206,16 @@ int Track::getTrackNumber()
 {
   return TrackNumber;
 }
-int Track::getEntryUPC()
+int Track::getEntryID()
 {
-  return EntryUPC;
+  return EntryID;
 }
 
-Artist::Artist(int id, string name, int upc)
+Artist::Artist(int id, string name, int eid)
 {
   setArtistID(id);
   setArtistName(name);
-  setEntryUPC(upc);
+  setEntryID(eid);
 }
 void Artist::setArtistID(int id)
 {
@@ -229,13 +229,13 @@ void Artist::setArtistName(string name)
   strncpy(ArtistName, ln, len);
   ArtistName[len] = '\0';
 }
-void Artist::setEntryUPC(int upc)
+void Artist::setEntryID(int eid)
 {
-  EntryUPC = upc;
+  EntryID = eid;
 }
-int Artist::getEntryUPC()
+int Artist::getEntryID()
 {
-  return EntryUPC;
+  return EntryID;
 }
 int Artist::getArtistID()
 {
@@ -246,14 +246,14 @@ string Artist::getArtistName()
   return ArtistName;
 }
 
-Entry_Genre::Entry_Genre(int upc, string genre)
+Entry_Genre::Entry_Genre(int eid, string genre)
 {
-  setEntryUPC(upc);
+  setEntryID(eid);
   setGenre(genre);
 }
-void Entry_Genre::setEntryUPC(int upc)
+void Entry_Genre::setEntryID(int eid)
 {
-  EntryUPC=upc;
+  EntryID=eid;
 }
 void Entry_Genre::setGenre(string genre)
 {
@@ -263,9 +263,9 @@ void Entry_Genre::setGenre(string genre)
   strncpy(Genre, ln, len);
   Genre[len] = '\0';
 }
-int Entry_Genre::getEntryUPC()
+int Entry_Genre::getEntryID()
 {
-  return EntryUPC;
+  return EntryID;
 }
 string Entry_Genre::getGenre()
 {
@@ -327,33 +327,3 @@ string Artist_members::getArtistMembers()
 {
   return ArtistMembers;
 }
-
-Collection_contains_entry::Collection_contains_entry(int CollectionID, int EntryUPC)
-{
-  setCollectionID(CollectionID);
-  setEntryUPC(EntryUPC);
-}
-
-void Collection_contains_entry::setCollectionID(int id)
-{
-  CollectionID = id;
-}
-
-void Collection_contains_entry::setEntryUPC(int upc)
-{
-  EntryUPC = upc;
-}
-
-int Collection_contains_entry::getCollectionID()
-{
-  return CollectionID;
-}
-
-int Collection_contains_entry::getEntryUPC()
-{
-  return EntryUPC;
-}
- //Collection Contains Entry
-
-//am back
-//ok
