@@ -38,7 +38,7 @@ void Functions::createCollection(Collection* collection)
 {
   stringstream ss;
   ss << "INSERT INTO Collection(Collection_Title, Collection_ID, User_ID)"
-     << "values ('" << collection->getCollectionTitle() << "', "
+     << " values ('" << collection->getCollectionTitle() << "', "
      << collection->getCollectionID() << ", " << collection->getUserID()
      << ")";
   if (mysql_query(db_conn, ss.str().c_str()))
@@ -76,8 +76,8 @@ void Functions::createEntry(Entry* entry)
 void Functions::createTrack(Track* track)
 {
   stringstream ss;
-  ss << "INSERT INTO Track(Track_ID, Track_title, Track_length, Track_number, Entry_ID"
-     << "values ("
+  ss << "INSERT INTO Track(Track_ID, Track_title, Track_length, Track_number, Entry_ID)"
+     << " values ("
      << track->getTrackID() << ", '"
      << track->getTrackTitle() << "', "
      << track->getTrackLength() << ", "
@@ -93,11 +93,11 @@ void Functions::createArtist(Artist* artist)
 {
   stringstream ss;
   ss << "INSERT INTO Artist(Artist_ID, Artist_name, Entry_ID)"
-     << "values ("
+     << " values ("
      << artist->getArtistID() << ", '"
-     << artist->getArtistName() << ", '"
+     << artist->getArtistName() << "', "
      << artist->getEntryID()
-     << "')";
+     << ")";
   if (mysql_query(db_conn, ss.str().c_str()))
       message("Failure");
   else
@@ -107,7 +107,7 @@ void Functions::createEntryGenre(Entry_Genre* egen)
 {
   stringstream ss;
   ss << "INSERT INTO Entry_Genre(Entry_ID, Genre)"
-     << "values ("
+     << " values ("
      << egen->getEntryID() << ", '"
      << egen->getGenre()
      << "')";
@@ -120,7 +120,7 @@ void Functions::createTrackGenre(Track_Genre* tgen)
 {
   stringstream ss;
   ss << "INSERT INTO Track_Genre(Track_ID, Genre)"
-     << "values ("
+     << " values ("
      << tgen->getTrackID() << ", '"
      << tgen->getGenre()
      << "')";
@@ -132,8 +132,8 @@ void Functions::createTrackGenre(Track_Genre* tgen)
 void Functions::createArtistMembers(Artist_members* amem)
 {
   stringstream ss;
-  ss << "INSERT INTO Entry_Genre(Artist_ID, Member_name)"
-     << "values ("
+  ss << "INSERT INTO Artist_members(Artist_ID, Member_name)"
+     << " values ("
      << amem->getArtistID() << ", '"
      << amem->getArtistMembers()
      << "')";
@@ -738,7 +738,7 @@ void Functions::printTracksFromEntry(int eid)
   {
     while((rows = mysql_fetch_row(rset)))
     {
-      cout << rows[0] << " \t\t|\t  " << rows[1] << " \t|\t " << rows[2] << rows[3] << " \t\t|\t  " << rows[4] << endl;
+      cout << rows[0] << " \t\t|\t  " << rows[1] << " \t|\t " << rows[2] <<" \t\t|\t" << rows[3] << " \t\t|\t  " << rows[4] << endl;
     }
   }
   mysql_free_result(rset);
@@ -817,7 +817,7 @@ void Functions::printArtistMembersFromArtist(int aid)
 {
   MYSQL_RES* rset;
   MYSQL_ROW rows;
-  string sql = "SELECT * FROM Artist_members WHERE aid=";
+  string sql = "SELECT * FROM Artist_members WHERE Artist_ID=";
   sql += to_string(aid);
 
   if (mysql_query(db_conn, sql.c_str()))

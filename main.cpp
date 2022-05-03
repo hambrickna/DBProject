@@ -91,7 +91,10 @@ void UserMenu(Functions* f)
         U = new User_();
         rset = mysql_use_result(f->getConnection());
         row = mysql_fetch_row(rset);
-        User_ID = stoi(row[0]);
+        if (row[0] != NULL)
+          User_ID = stoi(row[0]);
+        else
+          User_ID = -1;
         mysql_free_result(rset);
       }
       U->setUserID(User_ID + 1);
@@ -172,7 +175,12 @@ void CollectionMenu(int uid, Functions* f)
         C = new Collection();
         rset = mysql_use_result(f->getConnection());
         row = mysql_fetch_row(rset);
-        cid = stoi(row[0]);
+        if (row[0] != NULL)
+          cid = stoi(row[0]);
+        else
+        {
+          cid = 199;
+        }
         mysql_free_result(rset);
       }
       C->setCollectionID(cid + 1);
@@ -213,7 +221,7 @@ void EntryMenu(int cid, Functions* f)
        << "         0 - Delete Entry\n"
        << "         1 - Add Entry\n"
        << "         2 - Select Entry\n"
-       << "         3 - See Artists In Collection\n"
+       << "         3 - Show Artists\n"
        << "         4 - See Entry Genres\n";
   cin >> option;
 
@@ -227,7 +235,12 @@ void EntryMenu(int cid, Functions* f)
       {
         rset = mysql_use_result(f->getConnection());
         row = mysql_fetch_row(rset);
-        uid = stoi(row[0]);
+        if (row[0] != NULL)
+          uid = stoi(row[0]);
+        else
+        {
+          uid = -1;
+        }
         mysql_free_result(rset);
       }
       CollectionMenu(uid, f);
@@ -290,25 +303,7 @@ void EntryMenu(int cid, Functions* f)
       TrackMenu(Entry_ID, f);
 
     case 3:
-      sql << "SELECT Artist.Artist_ID, Artist.Artist_name, Artist.Entry_ID "
-          << "FROM Collection, Entry, Artist WHERE Collection.Collection_ID="
-          << cid << " AND Artist.Entry_ID=Entry.Entry_ID";
-      if(!mysql_query(f->getConnection(), sql.str().c_str()))
-      {
-        Artist* a = new Artist();
-        rset = mysql_use_result(f->getConnection());
-        row = mysql_fetch_row(rset);
-        cout << "\nArtist_ID | Artist_name | Entry_ID" << endl;
-        if (rset)
-        {
-          while((row = mysql_fetch_row(rset)))
-          {
-            cout << row[0] << " \t\t|\t  " << row[1] << " \t|\t " << row[2] << endl;
-          }
-        }
-        mysql_free_result(rset);
-      }
-      EntryMenu(cid, f);
+      ArtistMenu(eid,f);
     case 4:
       f->printEntryGenre(eid);
   }
@@ -317,9 +312,11 @@ void EntryMenu(int cid, Functions* f)
 
 void TrackMenu(int eid, Functions* f)
 {
-  int tid, option, length, number;
+  int option, length, number, cid;
   string title;
+  int tid = 399;
   stringstream sql;
+  stringstream sql2;
   MYSQL_RES* rset;
   MYSQL_ROW row;
   Track* T = NULL;
@@ -332,7 +329,16 @@ void TrackMenu(int eid, Functions* f)
   switch(option)
   {
     case -1:
-      EntryMenu(eid,f);
+      sql << "SELECT Collection_ID FROM Entry WHERE Entry_ID="
+          << to_string(eid);
+      if (!mysql_query(f->getConnection(), sql.str().c_str()))
+      {
+        rset = mysql_use_result(f->getConnection());
+        row = mysql_fetch_row(rset);
+        cid = stoi(row[0]);
+        mysql_free_result(rset);
+      }
+      EntryMenu(cid, f);
     case 0:
       cout << "\nEnter Track to Delete: ";
       cin >> tid;
@@ -341,22 +347,46 @@ void TrackMenu(int eid, Functions* f)
       TrackMenu(eid,f);
     case 1:
       cout << "\nEnter Track Title: ";
+      cin.ignore();
       getline(cin,title);
       cout << "\nEnter Track length (seconds): ";
       cin >> length;
-      sql << "SELECT MAX(Track_ID) FROM Track WHERE Entry_ID=" << eid;
+      sql << "SELECT MAX(Track_ID) FROM Track";
       if (!mysql_query(f->getConnection(), sql.str().c_str()))
       {
         T = new Track();
         rset = mysql_use_result(f->getConnection());
         row = mysql_fetch_row(rset);
-        tid = stoi(row[0]);
+        if (row[0] != NULL)
+          tid = stoi(row[0]);
+        else
+        {
+          tid = 399;
+        }
         mysql_free_result(rset); //Dont forget this
       }
+
+      sql2 << "SELECT MAX(Track_Number) FROM Track WHERE Entry_ID=" << eid;
+      if (!mysql_query(f->getConnection(), sql2.str().c_str()))
+      {
+        rset = mysql_use_result(f->getConnection());
+        row = mysql_fetch_row(rset);
+        if (row[0] != NULL)
+          number = stoi(row[0]) + 1;
+        else
+        {
+          number = 1;
+        }
+        mysql_free_result(rset); //Dont forget this
+      }
+      cout << eid << " " << title << " " << tid << " "
+           << length << " " << number << " " << endl;
+
       T->setEntryID(eid);
       T->setTrackTitle(title);
       T->setTrackID(tid+1);
       T->setTrackLength(length);
+      T->setTrackNumber(number);
       f->createTrack(T);
       TrackMenu(eid, f);
     case 2:
@@ -369,7 +399,9 @@ void TrackMenu(int eid, Functions* f)
 
 void ArtistMenu(int eid, Functions* f)
 {
-  int option,aid;
+  int option;
+  int aid = 499;
+  int cid;
   string name;
   stringstream sql;
   MYSQL_RES* rset;
@@ -384,7 +416,16 @@ void ArtistMenu(int eid, Functions* f)
   switch(option)
   {
     case -1:
-      EntryMenu(eid,f);
+      sql << "SELECT Collection_ID FROM Entry WHERE Entry_ID="
+          << to_string(eid);
+      if (!mysql_query(f->getConnection(), sql.str().c_str()))
+      {
+        rset = mysql_use_result(f->getConnection());
+        row = mysql_fetch_row(rset);
+        cid = stoi(row[0]);
+        mysql_free_result(rset);
+      }
+      EntryMenu(cid,f);
     case 0:
       cout << "\nEnter Artist to Delete: ";
       cin >> aid;
@@ -394,6 +435,7 @@ void ArtistMenu(int eid, Functions* f)
       ArtistMenu(eid,f);
     case 1:
       cout << "\nEnter Artist Name: ";
+      cin.ignore();
       getline(cin,name);
       sql << "SELECT MAX(Artist_ID) FROM Artist";
       if (!mysql_query(f->getConnection(), sql.str().c_str()))
@@ -401,7 +443,12 @@ void ArtistMenu(int eid, Functions* f)
         A = new Artist();
         rset = mysql_use_result(f->getConnection());
         row = mysql_fetch_row(rset);
-        aid = stoi(row[0]);
+        if (row[0] != NULL)
+          aid = stoi(row[0]);
+        else
+        {
+          aid = 499;
+        }
         mysql_free_result(rset); //Dont forget this
       }
       A->setEntryID(eid);
@@ -420,6 +467,7 @@ void ArtistMenu(int eid, Functions* f)
 void ArtistMembersMenu(int aid, Functions* f)
 {
   int option, amid;
+  int eid;
   string name;
   stringstream sql;
   MYSQL_RES* rset;
@@ -433,16 +481,27 @@ void ArtistMembersMenu(int aid, Functions* f)
   switch(option)
   {
     case -1:
-      ArtistMenu(aid,f);
+      sql << "SELECT Entry_ID FROM Artist WHERE Artist_ID="
+          << to_string(aid);
+      if (!mysql_query(f->getConnection(), sql.str().c_str()))
+      {
+        rset = mysql_use_result(f->getConnection());
+        row = mysql_fetch_row(rset);
+        eid = stoi(row[0]);
+        mysql_free_result(rset);
+      }
+      ArtistMenu(eid, f);
     case 0:
       cout << "\nEnter Artist Member to Delete: ";
+      cin.ignore();
       getline(cin, name);
       f->deleteOneArtistMember(name);
       cout << "\nArtist Deleted" << endl;
       ArtistMembersMenu(aid, f);
     case 1:
       cout << "\nEnter Artist Name: ";
-      getline(cin,name);
+      cin.ignore();
+      getline(cin, name);
       Am = new Artist_members();
       Am->setArtistID(aid);
       Am->setArtistMembers(name);
