@@ -42,6 +42,7 @@ class Functions
     void deleteOneEntryGenre(string genre, int eid);
     void deleteOneTrackGenre(string genre, int tid);
 
+
     void deleteAllCollectionFromUser(int uid);
     void deleteAllEntryFromCollection(int cid);
     void deleteAllTrackFromEntry(int eid);
