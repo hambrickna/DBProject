@@ -664,7 +664,37 @@ void Functions::printCollectionsFromUser(int uid)
   }
   mysql_free_result(rset);
 }
-// void Functions::printEntriesFromCollection(int cid);
+void Functions::printEntriesFromCollection(int cid)
+{
+  MYSQL_RES* rset;
+  MYSQL_ROW rows;
+  string sql = "SELECT * FROM Entry WHERE Collection_ID=";
+  sql += to_string(cid);
+
+  if (mysql_query(db_conn, sql.c_str()))
+  {
+    message("Error Printing! ");
+    return;
+  }
+  rset = mysql_use_result(db_conn);
+  cout << "\nTitle \t|\t Year \t|\t Format \t|\t Condition \t|\t UPC \t|\t Label \t|\t collection_id \t";
+  if (rset)
+  {
+    while ((rows = mysql_fetch_row(rset)))
+    {
+      cout << rows[0] << "\t|\t" << rows[1] << "\t|\t" << rows[2]
+           << "\t|\t" << rows[3] << "\t|\t" << rows[4] << "\t|\t"
+           << rows[5] << "\t|\t" << rows[6];
+    }
+    mysql_free_result(rset);
+  }
+
+
+
+
+
+
+}
 // void Functions::printTracksFromEntry(int upc);
 // void Functions::printArtistFromEntry(int upc);
 // void Functions::printEntryGenre(int upc);
