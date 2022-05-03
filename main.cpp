@@ -34,6 +34,7 @@ void TrackMenu(int eid, Functions* f);
 void ArtistMenu(int eid, Functions* f);
 void ArtistMembersMenu(int aid, Functions* f);
 void EntryGenreMenu(int eid, Functions* f);
+void TrackGenreMenu(int tid, Functions* f);
 
 void UserMenu(Functions* f)
 {
@@ -304,9 +305,13 @@ void EntryMenu(int cid, Functions* f)
       TrackMenu(Entry_ID, f);
 
     case 3:
-      ArtistMenu(eid,f);
+      cout << "Enter Entry_ID: ";
+      cin >> Entry_ID;
+      ArtistMenu(Entry_ID, f);
     case 4:
-      f->printEntryGenre(eid);
+      cout << "Enter Entry_ID: ";
+      cin >> Entry_ID;
+      EntryGenreMenu(Entry_ID, f);
   }
   return;
 }
@@ -393,7 +398,7 @@ void TrackMenu(int eid, Functions* f)
     case 2:
       cout << "\nEnter Track_ID: ";
       cin >> tid;
-      f->printTrackGenre(tid);
+      TrackGenreMenu(tid, f);
   }
   return;
 }
@@ -515,6 +520,7 @@ void ArtistMembersMenu(int aid, Functions* f)
 void EntryGenreMenu(int eid, Functions* f)
 {
   int option;
+  int cid;
   string genre;
   stringstream sql;
   MYSQL_RES* rset;
@@ -528,7 +534,17 @@ void EntryGenreMenu(int eid, Functions* f)
   switch(option)
   {
     case -1:
-      EntryMenu(eid,f);
+      sql << "SELECT Collection_ID FROM Entry WHERE Entry_ID="
+          << to_string(eid);
+      if (!mysql_query(f->getConnection(), sql.str().c_str()))
+      {
+        rset = mysql_use_result(f->getConnection());
+        row = mysql_fetch_row(rset);
+        cid = stoi(row[0]);
+        mysql_free_result(rset);
+      }
+      EntryMenu(cid, f);
+
     case 0:
       cout << "\nEnter Genre to Delete: ";
       cin.ignore();
@@ -557,8 +573,8 @@ void TrackGenreMenu(int tid, Functions* f)
   stringstream sql;
   MYSQL_RES* rset;
   MYSQL_ROW row;
-  TrackGenre* Tg = NULL;
-  f->printArtistMembersFromArtist(aid);
+  Track_Genre* Tg = NULL;
+  f->printTrackGenre(tid);
   cout << "\nOptions:-1 - Go Back\n"
        << "         0 - Delete Genre\n"
        << "         1 - Add Genre\n";
@@ -589,7 +605,7 @@ void TrackGenreMenu(int tid, Functions* f)
       getline(cin, genre);
       Tg = new Track_Genre();
       Tg->setTrackID(tid);
-      Tg->setGenre(genre);
+      Tg->setTrack(genre);
       f->createTrackGenre(Tg);
       TrackGenreMenu(tid, f);
   }

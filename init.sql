@@ -41,7 +41,7 @@ CREATE TABLE Artist(
     Artist_name VARCHAR(50) NOT NULL,
 		Entry_ID INT UNSIGNED NOT NULL,
     PRIMARY KEY(Artist_ID),
-		FOREIGN KEY(Entry_ID) REFERENCES Track(Entry_ID)
+		FOREIGN KEY(Entry_ID) REFERENCES Entry(Entry_ID)
 );
 
 CREATE TABLE Entry_Genre(

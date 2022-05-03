@@ -91,6 +91,9 @@ void Functions::createTrack(Track* track)
 }
 void Functions::createArtist(Artist* artist)
 {
+  cout << artist->getArtistID() << " "
+       << artist->getArtistName() << " "
+       << artist->getEntryID() << endl;
   stringstream ss;
   ss << "INSERT INTO Artist(Artist_ID, Artist_name, Entry_ID)"
      << " values ("
@@ -789,7 +792,7 @@ void Functions::printEntryGenre(int eid)
 {
   MYSQL_RES* rset;
   MYSQL_ROW rows;
-  string sql = "SELECT * FROM EntryGenre WHERE Entry_ID=";
+  string sql = "SELECT * FROM Entry_Genre WHERE Entry_ID=";
   sql += to_string(eid);
 
   if (mysql_query(db_conn, sql.c_str()))
@@ -812,7 +815,7 @@ void Functions::printTrackGenre(int tid)
 {
   MYSQL_RES* rset;
   MYSQL_ROW rows;
-  string sql = "SELECT * FROM TrackGenre WHERE Track_ID=";
+  string sql = "SELECT * FROM Track_Genre WHERE Track_ID=";
   sql += to_string(tid);
 
   if (mysql_query(db_conn, sql.c_str()))
