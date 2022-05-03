@@ -33,6 +33,7 @@ void EntryMenu(int cid, Functions* f);
 void TrackMenu(int eid, Functions* f);
 void ArtistMenu(int eid, Functions* f);
 void ArtistMembersMenu(int aid, Functions* f);
+void EntryGenreMenu(int eid, Functions* f);
 
 void UserMenu(Functions* f)
 {
@@ -507,6 +508,90 @@ void ArtistMembersMenu(int aid, Functions* f)
       Am->setArtistMembers(name);
       f->createArtistMembers(Am);
       ArtistMembersMenu(aid, f);
+  }
+  return;
+}
+
+void EntryGenreMenu(int eid, Functions* f)
+{
+  int option;
+  string genre;
+  stringstream sql;
+  MYSQL_RES* rset;
+  MYSQL_ROW row;
+  Entry_Genre* Eg = NULL;
+  f->printEntryGenre(eid);
+  cout << "\nOptions:-1 - Go Back\n"
+       << "         0 - Delete Genre\n"
+       << "         1 - Add Genre\n";
+  cin >> option;
+  switch(option)
+  {
+    case -1:
+      EntryMenu(eid,f);
+    case 0:
+      cout << "\nEnter Genre to Delete: ";
+      cin.ignore();
+      getline(cin, genre);
+      f->deleteOneEntryGenre(genre, eid);
+      cout << "\nGenre Deleted" << endl;
+      EntryGenreMenu(eid, f);
+    case 1:
+      cout << "\nEnter Genre to Add: ";
+      cin.ignore();
+      getline(cin, genre);
+      Eg = new Entry_Genre();
+      Eg->setEntryID(eid);
+      Eg->setGenre(genre);
+      f->createEntryGenre(Eg);
+      EntryGenreMenu(eid, f);
+  }
+  return;
+}
+
+void TrackGenreMenu(int tid, Functions* f)
+{
+  int option;
+  int eid;
+  string genre;
+  stringstream sql;
+  MYSQL_RES* rset;
+  MYSQL_ROW row;
+  TrackGenre* Tg = NULL;
+  f->printArtistMembersFromArtist(aid);
+  cout << "\nOptions:-1 - Go Back\n"
+       << "         0 - Delete Genre\n"
+       << "         1 - Add Genre\n";
+  cin >> option;
+  switch(option)
+  {
+    case -1:
+      sql << "SELECT Entry_ID FROM Track WHERE Track_ID="
+          << to_string(tid);
+      if (!mysql_query(f->getConnection(), sql.str().c_str()))
+      {
+        rset = mysql_use_result(f->getConnection());
+        row = mysql_fetch_row(rset);
+        eid = stoi(row[0]);
+        mysql_free_result(rset);
+      }
+      TrackMenu(eid, f);
+    case 0:
+      cout << "\nEnter Genre to Delete: ";
+      cin.ignore();
+      getline(cin, genre);
+      f->deleteOneTrackGenre(genre, tid);
+      cout << "\nTrack Genre Deleted" << endl;
+      TrackGenreMenu(tid, f);
+    case 1:
+      cout << "\nEnter Track Genre to add: ";
+      cin.ignore();
+      getline(cin, genre);
+      Tg = new Track_Genre();
+      Tg->setTrackID(tid);
+      Tg->setGenre(genre);
+      f->createTrackGenre(Tg);
+      TrackGenreMenu(tid, f);
   }
   return;
 }
