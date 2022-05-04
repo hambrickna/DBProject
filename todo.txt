@@ -1,8 +1,0 @@
-Revise SQL especially checks/foreign keys
-Add collectionid into entry on sql
-Add upc into artist
-
-Add User listing
-
-
-github key: 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
