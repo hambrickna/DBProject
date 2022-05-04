@@ -45,27 +45,6 @@ void UserMenu(Functions* f)
     case 0:
       cout << "\nEnter User_ID to Delete: ";
       cin >> uid;
-      //get all eid
-      //SELECT Entry_ID FROM Collection,Entry
-      //WHERE Entry.Collection_ID=Collection.Collection_ID AND Collection.User_ID={uid}
-      sql << "SELECT Entry_ID FROM Collection,Entry "
-          << "WHERE Entry.Collection_ID=Collection.Collection_ID AND Collection.User_ID="
-          << uid;
-      if(rset)
-      {
-        int i=0;
-        while((row = mysql_fetch_row(rset)))
-        {
-          int j = stoi(row[i]);
-          f->deleteAllTrackGenreFromEntry(j);
-          f->deleteAllTrackFromEntry(j);
-          f->deleteAllArtistFromEntry(j);
-          f->deleteEntry(j);
-          i++;
-        }
-      }
-      mysql_free_result(rset);
-      f->deleteAllCollectionFromUser(uid);
       f->deleteUser(uid);
       cout << "\nUser Deleted" << endl;
       UserMenu(f);
@@ -138,32 +117,6 @@ void CollectionMenu(int uid, Functions* f)
     case 0:
       cout << "\nEnter Collection_ID to Delete: ";
       cin >> cid;
-      //get all eid
-      //SELECT Entry_ID FROM Entry
-      //WHERE Collection.Collection_ID={id}
-      sql << "SELECT Entry_ID FROM Entry "
-          << "WHERE Collection.Collection_ID="
-          << cid;
-      if (!mysql_query(f->getConnection(), sql.str().c_str()))
-      {
-        if(rset)
-        {
-          int i=0;
-          int j=0;
-          while((row = mysql_fetch_row(rset)))
-          {
-            j = stoi(row[i]);
-            cout << j << endl;
-            f->deleteAllTrackGenreFromEntry(j);
-            f->deleteAllTrackFromEntry(j);
-            f->deleteAllArtistFromEntry(j);
-            f->deleteEntry(j);
-            i++;
-          }
-        }
-        mysql_free_result(rset);
-      }
-      //remove cid
       f->deleteCollection(cid);
       cout << "\nCollection Deleted" << endl;
       CollectionMenu(uid,f);
