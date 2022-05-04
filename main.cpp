@@ -198,10 +198,11 @@ void CollectionMenu(int uid, Functions* f)
       cout << "\nEnter Collection_ID: ";
       cin >> cid;
       cout << "\nEnter New Collection Title: ";
-      cin >> collectionTitle;
+      cin.ignore();
+      getline(cin, collectionTitle);
       sql << "UPDATE Collection "
-          << " SET Collection_Title=" << collectionTitle
-          << " WHERE Collection_ID=" << cid;
+          << " SET Collection_Title='" << collectionTitle
+          << "' WHERE Collection_ID=" << cid;
       if (!mysql_query(f->getConnection(), sql.str().c_str()))
       {
         cout << "\nSuccess!";
@@ -240,8 +241,8 @@ void EntryMenu(int cid, Functions* f)
        << "         1 - Add Entry\n"
        << "         2 - Select Entry\n"
        << "         3 - Show Artists\n"
-       << "         4 - See Entry Genres\n";
-       << "         5 - Modify Entry\n"
+       << "         4 - See Entry Genres\n"
+       << "         5 - Modify Entry\n";
   cin >> option;
 
   switch(option)

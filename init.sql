@@ -79,8 +79,8 @@ INSERT INTO Collection(Collection_Title, Collection_ID, User_ID)
 INSERT INTO Entry(Entry_title, Entry_year, Entry_format, Entry_condition, Entry_ID, Entry_label, Collection_ID)
    values ("Dark Side of the Moon", 1973, "Album", 'Very Good', 300, "Harvester Records", 200),
 	        ("The Wall", 1979, "Album", 'Fair', 301, "Harvester Records", 200),
-					("Wish You Were Here", 1975, 'Good', 302, "Harvester Records", 200),
-					("2112", 1976, 'Very Good', 303, "Toronto Sound", 200);
+					("Wish You Were Here", 1975, "Album", 'Good', 302, "Harvester Records", 200),
+					("2112", 1976, "Album", 'Very Good', 303, "Toronto Sound", 200);
 
 INSERT INTO Track(Track_ID, Track_title, Track_length, Track_number, Entry_ID)
    values (400, "Speak to Me / Breathe", 238, 1, 300),
@@ -100,7 +100,7 @@ INSERT INTO Entry_Genre(Entry_ID, Genre)
    values (300, "Psychedelic Rock"),
 	        (301, "Rock Opera");
 
-INSERT INTO Track_Genre(Entry_ID, Genre)
+INSERT INTO Track_Genre(Track_ID, Genre)
    values (400, "Psychedelic Rock"),
 	        (401, "Rock Opera"),
 					(402, "Progressive Rock");
