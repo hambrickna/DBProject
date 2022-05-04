@@ -1,4 +1,5 @@
 CREATE DATABASE MusicCollection;
+
 USE DATABASE MusicCollection;
 
 CREATE TABLE User_(
@@ -70,12 +71,40 @@ CREATE TABLE Artist_members(
 #Example Data
 
 INSERT INTO User_(User_name, User_ID)
-   values ("Bob", 001), ("Dave", 002), ("PianoMan", 003), ("Music Store", 004);
+   values ("Rock Shop", 1);
 
 INSERT INTO Collection(Collection_Title, Collection_ID, User_ID)
-   values ("Vinyls", 200, 001), ("Rock Mix", 201, 001), ("Pop Mix",
-		        202, 001), ("Emo Mix", 203, 001), ("My mix", 204, 002),
-					("Store1 Collection", 205, 004);
+   values ("Store's Collection", 200, 1);
 
-INSERT INTO Entry
-   values ("Dark Side of the Moon")
+INSERT INTO Entry(Entry_title, Entry_year, Entry_format, Entry_condition, Entry_ID, Entry_label, Collection_ID)
+   values ("Dark Side of the Moon", 1973, "Album", 'Very Good', 300, "Harvester Records", 200),
+	        ("The Wall", 1979, "Album", 'Fair', 301, "Harvester Records", 200),
+					("Wish You Were Here", 1975, 'Good', 302, "Harvester Records", 200),
+					("2112", 1976, 'Very Good', 303, "Toronto Sound", 200);
+
+INSERT INTO Track(Track_ID, Track_title, Track_length, Track_number, Entry_ID)
+   values (400, "Speak to Me / Breathe", 238, 1, 300),
+	        (401, "On the Run", 205, 2, 300),
+					(402, "Time", 425, 3, 300),
+					(403, "The Great Gig in the Sky", 284, 4, 300),
+					(404, "In the Flesh?", 200, 1, 301),
+					(405, "The Thin Ice", 210, 2, 301),
+					(406, "Another Brick in the Wall", 191, 3, 301);
+
+INSERT INTO Artist(Artist_ID, Artist_name, Entry_ID)
+   values (500, "Pink Floyd", 300),
+	        (501, "Pink Floyd", 301),
+					(502, "Pink Floyd", 302);
+
+INSERT INTO Entry_Genre(Entry_ID, Genre)
+   values (300, "Psychedelic Rock"),
+	        (301, "Rock Opera");
+
+INSERT INTO Track_Genre(Entry_ID, Genre)
+   values (400, "Psychedelic Rock"),
+	        (401, "Rock Opera"),
+					(402, "Progressive Rock");
+
+INSERT INTO Artist_members(Artist_ID, Member_name)
+   values (500, "David Gilmour"), (500, "Roger Waters"), (500, "Syd Barrett"),
+	        (500, "Richard Wright"), (500, "Nick Mason"), (500, "Bob Klose");
