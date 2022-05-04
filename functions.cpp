@@ -506,23 +506,29 @@ void Functions::printAllUser()
 {
   MYSQL_RES* rset;
   MYSQL_ROW rows;
-  string sql = "SELECT * FROM User_";
-  if(mysql_query(db_conn, sql.c_str()))
+  stringstream sql;
+  sql << "SELECT User_name, User_.User_ID, COUNT(Collection_ID) FROM User_, Collection WHERE User_.User_ID=Collection.User_ID GROUP BY User_.User_ID";
+  if(mysql_query(db_conn, sql.str().c_str()))
   {
     message("Error printing! ");
     return;
   }
   rset = mysql_use_result(db_conn);
-  cout << "UserName | UserID" << endl;
+  cout << setw(75) << setfill('-') << "-" << endl;
+  cout << "|" << left << setw(50) << setfill(' ') << "User Name" <<  "|"
+       << left << setw(5) << setfill(' ') << "UID" <<  "|"
+       << left << setw(16) << setfill(' ') << "Num Collections" << "|" <<endl;
+  cout << setw(75) << setfill('-') << "-" << endl;
   if(rset)
   {
     while((rows = mysql_fetch_row(rset)))
     {
-       cout << rows[0]
-            << " | " << rows[1]
-            << endl;
+       cout << "|" << left << setw(50) << setfill(' ') << rows[0] <<  "|"
+            << left << setw(5) << setfill(' ') << rows[1] <<  "|"
+            << left << setw(16) << setfill(' ') << rows[2] << "|" <<endl;
     }
   }
+  cout << setw(75) << setfill('-') << "-" << endl;
   mysql_free_result(rset);
 }
 
@@ -530,169 +536,214 @@ void Functions::printAllCollection()
 {
   MYSQL_RES* rset;
   MYSQL_ROW rows;
-  string sql = "SELECT * FROM Collection";
-  if(mysql_query(db_conn, sql.c_str()))
+  stringstream sql;
+  sql << "SELECT Collection_Title, Collection_ID, User_name FROM Collection, User_ WHERE Collection.User_ID=User_.User_ID";
+  if(mysql_query(db_conn, sql.str().c_str()))
   {
     message("Error printing! ");
     return;
   }
   rset = mysql_use_result(db_conn);
-  cout << "Collection_Title | Collection_ID | User_ID" << endl;
+  cout << setw(100) << setfill('-') << "-" << endl;
+  cout << "|" << left << setw(50) << setfill(' ') << "Collection Title" <<  "|"
+       << left << setw(5) << setfill(' ') << "CID" <<  "|"
+       << left << setw(50) << setfill(' ') << "User Name" << "|" <<endl;
+  cout << setw(100) << setfill('-') << "-" << endl;
   if(rset)
   {
     while((rows = mysql_fetch_row(rset)))
     {
-       cout << rows[0]
-            << " | " << rows[1]
-            << " | " << rows[2]
-            << endl;
+       cout << "|" << left << setw(50) << setfill(' ') << rows[0] <<  "|"
+            << left << setw(5) << setfill(' ') << rows[1] <<  "|"
+            << left << setw(50) << setfill(' ') << rows[2] << "|" <<endl;
     }
   }
+  cout << setw(100) << setfill('-') << "-" << endl;
   mysql_free_result(rset);
 }
 void Functions::printAllEntry()
 {
   MYSQL_RES* rset;
   MYSQL_ROW rows;
-  string sql = "SELECT * FROM Entry";
-  if(mysql_query(db_conn, sql.c_str()))
+  stringstream sql;
+  sql << "SELECT Entry_title, Entry_year, Entry_format, Entry_ID, Entry_label, Collection_Title FROM Entry, Collection "
+                   << "WHERE Collection.Collection_ID=Entry.Collection_ID";
+  if(mysql_query(db_conn, sql.str().c_str()))
   {
     message("Error printing! ");
     return;
   }
   rset = mysql_use_result(db_conn);
-  cout << "Entry_title | Entry_year | Entry_format | Condition | ID | Label" << endl;
+  cout << setw(165) << setfill('-') << "-" << endl;
+  cout << "|" << left << setw(50) << setfill(' ') << "Entry Title" <<  "|"
+       << left << setw(5) << setfill(' ') << "Year" <<  "|"
+       << left << setw(15) << setfill(' ') << "Entry Format" << "|"
+       << left << setw(5) << setfill(' ') << "EID" << "|"
+       << left << setw(50) << setfill(' ') << "Entry Label" << "|"
+       << left << setw(50) << setfill(' ') << "Collection Title" << "|" << endl;
+  cout << setw(165) << setfill('-') << "-" << endl;
   if(rset)
   {
     while((rows = mysql_fetch_row(rset)))
     {
-       cout << rows[0]
-            << "| " << rows[1]
-            << "| " << rows[2]
-            << "| " << rows[3]
-            << "| " << rows[4]
-            << "| " << rows[5]
-            << endl;
+       cout << "|" << left << setw(50) << setfill(' ') << rows[0] <<  "|"
+       << left << setw(5) << setfill(' ') << rows[1] <<  "|"
+       << left << setw(15) << setfill(' ') << rows[2] << "|"
+       << left << setw(5) << setfill(' ') << rows[3] << "|"
+       << left << setw(50) << setfill(' ') << rows[4] << "|"
+       << left << setw(50) << setfill(' ') << rows[5] << "|" << endl;
     }
   }
+  cout << setw(165) << setfill('-') << "-" << endl;
   mysql_free_result(rset);
 }
 void Functions::printAllTrack()
 {
   MYSQL_RES* rset;
   MYSQL_ROW rows;
-  string sql = "SELECT * FROM Track";
-  if(mysql_query(db_conn, sql.c_str()))
+  stringstream sql;
+  sql << "SELECT Track_number, Track_title, Track_length, Track_ID, Entry_title FROM Track,Entry WHERE Entry.Entry_ID=Track.Entry_ID";
+  if(mysql_query(db_conn, sql.str().c_str()))
   {
     message("Error printing! ");
     return;
   }
   rset = mysql_use_result(db_conn);
-  cout << "Track_ID | Track_title | Track_length | Track_number | Entry_ID" << endl;
+  cout << setw(108) << setfill('-') << "-" << endl;
+  cout << "|" << left << setw(3) << setfill(' ') << "Track Number" <<  "|"
+       << left << setw(50) << setfill(' ') << "Track Title" <<  "|"
+       << left << setw(7) << setfill(' ') << "Length" << "|"
+       << left << setw(5) << setfill(' ') << "TID" << "|"
+       << left << setw(50) << setfill(' ') << "Entry Title" << "|" << endl;
+  cout << setw(108) << setfill('-') << "-" << endl;
   if(rset)
   {
     while((rows = mysql_fetch_row(rset)))
     {
-       cout << rows[0]
-            << " | " << rows[1]
-            << " | " << rows[2]
-            << " | " << rows[3]
-            << " | " << rows[4]
-            << endl;
+       cout << "|" << left << setw(3) << setfill(' ') << rows[0] <<  "|"
+       << left << setw(50) << setfill(' ') << rows[1] <<  "|"
+       << left << setw(7) << setfill(' ') << rows[2] << "|"
+       << left << setw(5) << setfill(' ') << rows[3] << "|"
+       << left << setw(45) << setfill(' ') << rows[4] << "|" << endl;
     }
   }
+  cout << setw(108) << setfill('-') << "-" << endl;
   mysql_free_result(rset);
 }
 void Functions::printAllArtist()
 {
   MYSQL_RES* rset;
   MYSQL_ROW rows;
-  string sql = "SELECT * FROM Artist";
-  if(mysql_query(db_conn, sql.c_str()))
+  stringstream sql;
+  sql << "SELECT Artist.Artist_name, Artist.Artist_ID, Entry.Entry_title FROM Entry,Artist WHERE Entry.Entry_ID=Artist.Entry_ID";
+  if(mysql_query(db_conn, sql.str().c_str()))
   {
     message("Error printing! ");
     return;
   }
   rset = mysql_use_result(db_conn);
-  cout << "Artist_ID | Artist_name" << endl;
+  cout << setw(106) << setfill('-') << "-" << endl;
+  cout << "|" << left << setw(50) << setfill(' ') << "Artist Name" <<  "|"
+       << left << setw(5) << setfill(' ') << "AID" <<  "|"
+       << left << setw(50) << setfill(' ') << "Entry Title" << "|" <<endl;
+  cout << setw(106) << setfill('-') << "-" << endl;
   if(rset)
   {
     while((rows = mysql_fetch_row(rset)))
     {
-       cout << rows[0]
-            << " | " << rows[1]
-            << endl;
+       cout << "|" << left << setw(50) << setfill(' ') << rows[0] <<  "|"
+           << left << setw(5) << setfill(' ') << rows[1] <<  "|"
+           << left << setw(50) << setfill(' ') << rows[2] << "|" << endl;
     }
   }
+  cout << setw(106) << setfill('-') << "-" << endl;
   mysql_free_result(rset);
 }
 void Functions::printAllEntryGenre()
 {
   MYSQL_RES* rset;
   MYSQL_ROW rows;
-  string sql = "SELECT * FROM Entry_Genre";
-  if(mysql_query(db_conn, sql.c_str()))
+  stringstream sql;
+  sql << "SELECT Entry.Entry_title, Entry.Entry_ID, Entry_Genre.Genre FROM Entry,Entry_Genre WHERE Entry.Entry_ID=Entry_Genre.Entry_ID";
+  if(mysql_query(db_conn, sql.str().c_str()))
   {
     message("Error printing! ");
     return;
   }
   rset = mysql_use_result(db_conn);
-  cout << "Entry_ID | Genre" << endl;
+  cout << setw(106) << setfill('-') << "-" << endl;
+  cout << "|" << left << setw(50) << setfill(' ') << "Entry Title" <<  "|"
+       << left << setw(5) << setfill(' ') << "EID" <<  "|"
+       << left << setw(50) << setfill(' ') << "Entry Genre" << "|" <<endl;
+  cout << setw(106) << setfill('-') << "-" << endl;
   if(rset)
   {
     while((rows = mysql_fetch_row(rset)))
     {
-       cout << rows[0]
-            << " | " << rows[1]
-            << endl;
+       cout << "|" << left << setw(50) << setfill(' ') << rows[0] <<  "|"
+           << left << setw(5) << setfill(' ') << rows[1] <<  "|"
+           << left << setw(50) << setfill(' ') << rows[2] << "|" << endl;
     }
   }
+  cout << setw(106) << setfill('-') << "-" << endl;
   mysql_free_result(rset);
 }
 void Functions::printAllTrackGenre()
 {
   MYSQL_RES* rset;
   MYSQL_ROW rows;
-  string sql = "SELECT * FROM Track_Genre";
-  if(mysql_query(db_conn, sql.c_str()))
+  stringstream sql;
+  sql << "SELECT Track.Track_title, Track.Track_ID, Track_Genre.Genre FROM Track,Track_Genre WHERE Track.Track_ID=Track_Genre.Track_ID";
+  if(mysql_query(db_conn, sql.str().c_str()))
   {
     message("Error printing! ");
     return;
   }
   rset = mysql_use_result(db_conn);
-  cout << "Track_ID | Genre" << endl;
+  cout << setw(106) << setfill('-') << "-" << endl;
+  cout << "|" << left << setw(50) << setfill(' ') << "Track Title" <<  "|"
+       << left << setw(5) << setfill(' ') << "TID" <<  "|"
+       << left << setw(50) << setfill(' ') << "Track Genre" << "|" <<endl;
+  cout << setw(106) << setfill('-') << "-" << endl;
   if(rset)
   {
     while((rows = mysql_fetch_row(rset)))
     {
-       cout << rows[0]
-            << " | " << rows[1]
-            << endl;
+       cout << "|" << left << setw(50) << setfill(' ') << rows[0] <<  "|"
+           << left << setw(5) << setfill(' ') << rows[1] <<  "|"
+           << left << setw(50) << setfill(' ') << rows[2] << "|" << endl;
     }
   }
+  cout << setw(106) << setfill('-') << "-" << endl;
   mysql_free_result(rset);
 }
 void Functions::printAllArtistMembers()
 {
   MYSQL_RES* rset;
   MYSQL_ROW rows;
-  string sql = "SELECT * FROM Artist_members";
-  if(mysql_query(db_conn, sql.c_str()))
+  stringstream sql;
+  sql << "SELECT Artist.Artist_name, Artist.Artist_ID, Artist_members.Member_name FROM Artist, Artist_members WHERE Artist.Artist_ID=Artist_members.Artist_ID";
+  if(mysql_query(db_conn, sql.str().c_str()))
   {
     message("Error printing! ");
     return;
   }
   rset = mysql_use_result(db_conn);
-  cout << "Artist_ID | Member_name" << endl;
+  cout << setw(106) << setfill('-') << "-" << endl;
+  cout << "|" << left << setw(50) << setfill(' ') << "Artist Name" <<  "|"
+       << left << setw(5) << setfill(' ') << "AID" <<  "|"
+       << left << setw(50) << setfill(' ') << "Artist Member" << "|" <<endl;
+  cout << setw(106) << setfill('-') << "-" << endl;
   if(rset)
   {
     while((rows = mysql_fetch_row(rset)))
     {
-       cout << rows[0]
-            << " | " << rows[1]
-            << endl;
+      cout << "|" << left << setw(50) << setfill(' ') << rows[0] <<  "|"
+           << left << setw(5) << setfill(' ') << rows[1] <<  "|"
+           << left << setw(50) << setfill(' ') << rows[2] << "|" << endl;
     }
   }
+  cout << setw(106) << setfill('-') << "-" << endl;
   mysql_free_result(rset);
 }
 
@@ -702,162 +753,232 @@ void Functions::printCollectionsFromUser(int uid)
 {
   MYSQL_RES* rset;
   MYSQL_ROW rows;
-  string sql = "SELECT * FROM Collection WHERE User_ID=";
-  sql += to_string(uid);
-
-  if (mysql_query(db_conn, sql.c_str()))
+  stringstream sql;
+  sql << "SELECT Collection_Title, Collection.Collection_ID, User_name FROM Collection, User_"
+      << " WHERE Collection.User_ID=User_.User_ID AND Collection.User_ID=" << uid;
+  if(mysql_query(db_conn, sql.str().c_str()))
   {
-    message("Error Printing! ");
+    message("Error printing! ");
     return;
   }
   rset = mysql_use_result(db_conn);
-  cout << "\nCollection_Title | Collection_ID | User_ID" << endl;
-  if (rset)
+  cout << setw(109) << setfill('-') << "-" << endl;
+  cout << "|" << left << setw(50) << setfill(' ') << "Collection Title" <<  "|"
+       << left << setw(5) << setfill(' ') << "CID" <<  "|"
+       << left << setw(50) << setfill(' ') << "User Name" << "|" << endl;
+  cout << setw(109) << setfill('-') << "-" << endl;
+  if(rset)
   {
     while((rows = mysql_fetch_row(rset)))
     {
-      cout << rows[0] << " \t\t|\t  " << rows[1] << " \t|\t " << rows[2] << endl;
+       cout << "|" << left << setw(50) << setfill(' ') << rows[0] <<  "|"
+            << left << setw(5) << setfill(' ') << rows[1] <<  "|"
+            << left << setw(50) << setfill(' ') << rows[2] << "|" << endl;
     }
   }
+  cout << setw(109) << setfill('-') << "-" << endl;
   mysql_free_result(rset);
 }
 void Functions::printEntriesFromCollection(int cid)
 {
   MYSQL_RES* rset;
   MYSQL_ROW rows;
-  string sql = "SELECT * FROM Entry WHERE Collection_ID=";
-  sql += to_string(cid);
-  if (mysql_query(db_conn, sql.c_str()))
+  stringstream sql;
+  sql << "SELECT Entry_title, Entry_year, Entry_format, Entry_ID, Entry_label, Collection_Title FROM Entry, Collection "
+                   << "WHERE Collection.Collection_ID=Entry.Collection_ID AND Collection.Collection_ID=" << cid;
+  if(mysql_query(db_conn, sql.str().c_str()))
   {
-    message("Error Printing! ");
+    message("Error printing! ");
     return;
   }
   rset = mysql_use_result(db_conn);
-  cout << "\nEntry_title | Entry_year | Entry_format | Entry_condition | Entry_ID | Entry_label" << endl;
-  if (rset)
+  cout << setw(122) << setfill('-') << "-" << endl;
+  cout << "|" << left << setw(30) << setfill(' ') << "Entry Title" <<  "|"
+       << left << setw(5) << setfill(' ') << "Year" <<  "|"
+       << left << setw(15) << setfill(' ') << "Entry Format" << "|"
+       << left << setw(5) << setfill(' ') << "EID" << "|"
+       << left << setw(30) << setfill(' ') << "Entry Label" << "|"
+       << left << setw(30) << setfill(' ') << "Collection Title" << "|" << endl;
+  cout << setw(122) << setfill('-') << "-" << endl;
+  if(rset)
   {
     while((rows = mysql_fetch_row(rset)))
     {
-      cout << rows[0] << " \t\t|\t  " << rows[1] << " \t|\t " << rows[2] <<  " \t\t|\t" << rows[3] << " \t\t|\t  " << rows[4] << " \t|\t " << rows[5] << endl;
+       cout << "|" << left << setw(30) << setfill(' ') << rows[0] <<  "|"
+       << left << setw(5) << setfill(' ') << rows[1] <<  "|"
+       << left << setw(15) << setfill(' ') << rows[2] << "|"
+       << left << setw(5) << setfill(' ') << rows[3] << "|"
+       << left << setw(30) << setfill(' ') << rows[4] << "|"
+       << left << setw(30) << setfill(' ') << rows[5] << "|" << endl;
     }
   }
+  cout << setw(122) << setfill('-') << "-" << endl;
   mysql_free_result(rset);
 }
 void Functions::printTracksFromEntry(int eid)
 {
   MYSQL_RES* rset;
   MYSQL_ROW rows;
-  string sql = "SELECT * FROM Track WHERE Entry_ID=";
-  sql += to_string(eid);
-  if (mysql_query(db_conn, sql.c_str()))
+  stringstream sql;
+  sql << "SELECT Track_number, Track_title, Track_length, Track_ID, Entry_title FROM Track,Entry "
+                   << "WHERE Entry.Entry_ID=Track.Entry_ID AND Entry.Entry_ID=" << eid;
+  if(mysql_query(db_conn, sql.str().c_str()))
   {
-    message("Error Printing! ");
+    message("Error printing! ");
     return;
   }
   rset = mysql_use_result(db_conn);
-  cout << "\nTrack_ID | Track_title | Track_length | Track_number | Entry_ID" << endl;
-  if (rset)
+  cout << setw(124) << setfill('-') << "-" << endl;
+  cout << "|" << left << setw(13) << setfill(' ') << "Track Number" <<  "|"
+       << left << setw(50) << setfill(' ') << "Track Title" <<  "|"
+       << left << setw(7) << setfill(' ') << "Length" << "|"
+       << left << setw(5) << setfill(' ') << "TID" << "|"
+       << left << setw(43) << setfill(' ') << "Entry Title" << "|" << endl;
+  cout << setw(124) << setfill('-') << "-" << endl;
+  if(rset)
   {
     while((rows = mysql_fetch_row(rset)))
     {
-      cout << rows[0] << " \t\t|\t  " << rows[1] << " \t|\t " << rows[2] <<" \t\t|\t" << rows[3] << " \t\t|\t  " << rows[4] << endl;
+       cout << "|" << left << setw(13) << setfill(' ') << rows[0] <<  "|"
+       << left << setw(50) << setfill(' ') << rows[1] <<  "|"
+       << left << setw(7) << setfill(' ') << rows[2] << "|"
+       << left << setw(5) << setfill(' ') << rows[3] << "|"
+       << left << setw(43) << setfill(' ') << rows[4] << "|" << endl;
     }
   }
+  cout << setw(124) << setfill('-') << "-" << endl;
   mysql_free_result(rset);
 }
+
+
 void Functions::printArtistFromEntry(int eid)
 {
   MYSQL_RES* rset;
   MYSQL_ROW rows;
-  string sql = "SELECT * FROM Artist WHERE Entry_ID=";
-  sql += to_string(eid);
-
-  if (mysql_query(db_conn, sql.c_str()))
+  stringstream sql;
+  sql << "SELECT Artist.Artist_name, Artist.Artist_ID, Entry.Entry_title FROM Entry,Artist "
+                   << "WHERE Entry.Entry_ID=Artist.Entry_ID AND Artist.Entry_ID=" << eid;
+  if(mysql_query(db_conn, sql.str().c_str()))
   {
-    message("Error Printing! ");
+    message("Error printing! ");
     return;
   }
   rset = mysql_use_result(db_conn);
-  cout << "\nArtist_ID | Artist_name | Entry_ID" << endl;
-  if (rset)
+  cout << setw(105) << setfill('-') << "-" << endl;
+  cout << "|" << left << setw(48) << setfill(' ') << "Artist Name" <<  "|"
+       << left << setw(5) << setfill(' ') << "AID" <<  "|"
+       << left << setw(48) << setfill(' ') << "Entry Title" << "|" <<endl;
+  cout << setw(105) << setfill('-') << "-" << endl;
+  if(rset)
   {
     while((rows = mysql_fetch_row(rset)))
     {
-      cout << rows[0] << " \t\t|\t  " << rows[1] << " \t|\t " << rows[2] << endl;
+       cout << "|" << left << setw(48) << setfill(' ') << rows[0] <<  "|"
+           << left << setw(5) << setfill(' ') << rows[1] <<  "|"
+           << left << setw(48) << setfill(' ') << rows[2] << "|" << endl;
     }
   }
+  cout << setw(105) << setfill('-') << "-" << endl;
   mysql_free_result(rset);
 }
+
+
 void Functions::printEntryGenre(int eid)
 {
   MYSQL_RES* rset;
   MYSQL_ROW rows;
-  string sql = "SELECT * FROM Entry_Genre WHERE Entry_ID=";
-  sql += to_string(eid);
-
-  if (mysql_query(db_conn, sql.c_str()))
+  stringstream sql;
+  sql << "SELECT Entry.Entry_title, Entry.Entry_ID, Entry_Genre.Genre FROM Entry, Entry_Genre"
+                   << " WHERE Entry.Entry_ID=Entry_Genre.Entry_ID AND Entry.Entry_ID=" << eid;
+  if(mysql_query(db_conn, sql.str().c_str()))
   {
-    message("Error Printing! ");
+    message("Error printing! ");
     return;
   }
   rset = mysql_use_result(db_conn);
-  cout << "\nEntry_ID | Genre" << endl;
-  if (rset)
+  cout << setw(109) << setfill('-') << "-" << endl;
+  cout << "|" << left << setw(50) << setfill(' ') << "Entry Title" <<  "|"
+       << left << setw(5) << setfill(' ') << "EID" <<  "|"
+       << left << setw(50) << setfill(' ') << "Entry Genre" << "|" <<endl;
+  cout << setw(109) << setfill('-') << "-" << endl;
+  if(rset)
   {
     while((rows = mysql_fetch_row(rset)))
     {
-      cout << rows[0] << " \t\t|\t  " << rows[1] << endl;
+       cout << "|" << left << setw(50) << setfill(' ') << rows[0] <<  "|"
+           << left << setw(5) << setfill(' ') << rows[1] <<  "|"
+           << left << setw(50) << setfill(' ') << rows[2] << "|" << endl;
     }
   }
+  cout << setw(109) << setfill('-') << "-" << endl;
   mysql_free_result(rset);
 }
+
+
 void Functions::printTrackGenre(int tid)
 {
   MYSQL_RES* rset;
   MYSQL_ROW rows;
-  string sql = "SELECT * FROM Track_Genre WHERE Track_ID=";
-  sql += to_string(tid);
-
-  if (mysql_query(db_conn, sql.c_str()))
+  stringstream sql;
+  sql << "SELECT Track.Track_title, Track.Track_ID, Track_Genre.Genre FROM Track,Track_Genre "
+                   << " WHERE Track.Track_ID=Track_Genre.Track_ID AND Track.Track_ID=" << tid;
+  if(mysql_query(db_conn, sql.str().c_str()))
   {
-    message("Error Printing! ");
+    message("Error printing! ");
     return;
   }
   rset = mysql_use_result(db_conn);
-  cout << "\nTrack_ID | Genre" << endl;
-  if (rset)
+  cout << setw(109) << setfill('-') << "-" << endl;
+  cout << "|" << left << setw(50) << setfill(' ') << "Track Title" <<  "|"
+       << left << setw(5) << setfill(' ') << "TID" <<  "|"
+       << left << setw(50) << setfill(' ') << "Track Genre" << "|" <<endl;
+  cout << setw(109) << setfill('-') << "-" << endl;
+  if(rset)
   {
     while((rows = mysql_fetch_row(rset)))
     {
-      cout << rows[0] << " \t\t|\t  " << rows[1] << endl;
+       cout << "|" << left << setw(50) << setfill(' ') << rows[0] <<  "|"
+           << left << setw(5) << setfill(' ') << rows[1] <<  "|"
+           << left << setw(50) << setfill(' ') << rows[2] << "|" << endl;
     }
   }
+  cout << setw(109) << setfill('-') << "-" << endl;
   mysql_free_result(rset);
 }
-//
+
+
 void Functions::printArtistMembersFromArtist(int aid)
 {
   MYSQL_RES* rset;
   MYSQL_ROW rows;
-  string sql = "SELECT * FROM Artist_members WHERE Artist_ID=";
-  sql += to_string(aid);
-
-  if (mysql_query(db_conn, sql.c_str()))
+  stringstream sql;
+  sql << "SELECT Artist.Artist_name, Artist.Artist_ID, Artist_members.Member_name FROM Artist, Artist_members "
+                   << " WHERE Artist.Artist_ID=Artist_members.Artist_ID AND Artist.Artist_ID=" << aid;
+    if(mysql_query(db_conn, sql.str().c_str()))
   {
-    message("Error Printing! ");
+    message("Error printing! ");
     return;
   }
   rset = mysql_use_result(db_conn);
-  cout << "\nArtist_ID | Member_name" << endl;
-  if (rset)
+  cout << setw(109) << setfill('-') << "-" << endl;
+  cout << "|" << left << setw(50) << setfill(' ') << "Artist Name" <<  "|"
+       << left << setw(5) << setfill(' ') << "AID" <<  "|"
+       << left << setw(50) << setfill(' ') << "Artist Member" << "|" <<endl;
+  cout << setw(109) << setfill('-') << "-" << endl;
+  if(rset)
   {
     while((rows = mysql_fetch_row(rset)))
     {
-      cout << rows[0] << " \t\t|\t  " << rows[1] << endl;
+      cout << "|" << left << setw(50) << setfill(' ') << rows[0] <<  "|"
+           << left << setw(5) << setfill(' ') << rows[1] <<  "|"
+           << left << setw(50) << setfill(' ') << rows[2] << "|" << endl;
     }
   }
+  cout << setw(109) << setfill('-') << "-" << endl;
   mysql_free_result(rset);
 }
+
+
 //////////////////////////////////////////////////////////
 
 

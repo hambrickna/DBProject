@@ -5,6 +5,7 @@
 using std::string;
 
 const int MAX_SIZE = 50;
+const string HEADER = "--------------------------------------------------------------------";
 
 class User_
 {

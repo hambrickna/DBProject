@@ -1,3 +1,6 @@
+CREATE DATABASE MusicCollection;
+USE DATABASE MusicCollection;
+
 CREATE TABLE User_(
 	User_name VARCHAR(50) NOT NULL,
     User_ID INT UNSIGNED NOT NULL,
@@ -73,3 +76,6 @@ INSERT INTO Collection(Collection_Title, Collection_ID, User_ID)
    values ("Vinyls", 200, 001), ("Rock Mix", 201, 001), ("Pop Mix",
 		        202, 001), ("Emo Mix", 203, 001), ("My mix", 204, 002),
 					("Store1 Collection", 205, 004);
+
+INSERT INTO Entry
+   values ("Dark Side of the Moon")

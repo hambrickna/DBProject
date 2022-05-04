@@ -47,6 +47,7 @@ void UserMenu(Functions* f)
   int cid;
   int uid;
   int option;
+
   f->printAllUser();
   cout << "\nOptions:-1 - Exit\n"
        << "         0 - Delete User\n"
@@ -216,7 +217,6 @@ void EntryMenu(int cid, Functions* f)
   Entry* E = NULL;
   MYSQL_RES* rset;
   MYSQL_ROW row;
-
   f->printEntriesFromCollection(cid);
 
   cout << "\nOptions:-1 - Go Back\n"
