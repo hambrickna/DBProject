@@ -296,7 +296,7 @@ void EntryMenu(int cid, Functions* f)
       cout << "\nEnter Entry label: ";
       getline(cin, label);
       sql << "UPDATE Entry "
-          << " SET Entry_title='" << title
+          << " SET Entry_title='" << entryTitle
           << "' ,Entry_year=" << year
           << " ,Entry_format='" << format
           << "' ,Entry_condition='" << condition
@@ -715,7 +715,7 @@ int main(int argc, char** argv) {
 
 
   Functions* f = new Functions("localhost", "root",
-                                "Na228513!", "MusicCollection");
+                                "psswrd123", "MusicCollection");
 
   UserMenu(f);
 

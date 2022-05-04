@@ -507,28 +507,26 @@ void Functions::printAllUser()
   MYSQL_RES* rset;
   MYSQL_ROW rows;
   stringstream sql;
-  sql << "SELECT User_name, User_.User_ID, COUNT(Collection_ID) FROM User_, Collection WHERE User_.User_ID=Collection.User_ID GROUP BY User_.User_ID";
+  sql << "SELECT User_name, User_.User_ID FROM User_";
   if(mysql_query(db_conn, sql.str().c_str()))
   {
     message("Error printing! ");
     return;
   }
   rset = mysql_use_result(db_conn);
-  cout << setw(75) << setfill('-') << "-" << endl;
+  cout << setw(58) << setfill('-') << "-" << endl;
   cout << "|" << left << setw(50) << setfill(' ') << "User Name" <<  "|"
-       << left << setw(5) << setfill(' ') << "UID" <<  "|"
-       << left << setw(16) << setfill(' ') << "Num Collections" << "|" <<endl;
-  cout << setw(75) << setfill('-') << "-" << endl;
+       << left << setw(5) << setfill(' ') << "UID" <<  "|" << endl;
+  cout << setw(58) << setfill('-') << "-" << endl;
   if(rset)
   {
     while((rows = mysql_fetch_row(rset)))
     {
        cout << "|" << left << setw(50) << setfill(' ') << rows[0] <<  "|"
-            << left << setw(5) << setfill(' ') << rows[1] <<  "|"
-            << left << setw(16) << setfill(' ') << rows[2] << "|" <<endl;
+            << left << setw(5) << setfill(' ') << rows[1] <<  "|" << endl;
     }
   }
-  cout << setw(75) << setfill('-') << "-" << endl;
+  cout << setw(58) << setfill('-') << "-" << endl;
   mysql_free_result(rset);
 }
 
