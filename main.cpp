@@ -98,8 +98,8 @@ void UserMenu(Functions* f)
       cout << "\nEnter New Username: ";
       cin >> userName;
       sql << "UPDATE User_ "
-          << " SET User_name=" << userName
-          << " WHERE User_ID=" << uid;
+          << " SET User_name='" << userName
+          << "' WHERE User_ID=" << uid;
       if (!mysql_query(f->getConnection(), sql.str().c_str()))
       {
         cout << "\nSuccess!";
@@ -343,12 +343,12 @@ void EntryMenu(int cid, Functions* f)
       cout << "\nEnter Entry label: ";
       getline(cin, label);
       sql << "UPDATE Entry "
-          << " SET Entry_title=" << title
-          << " ,Entry_year=" << year
-          << " ,Entry_format=" << format
-          << " ,Entry_condition=" << condition
-          << " ,Entry_label=" << label
-          << " ,Collection_ID=" << cid
+          << " SET Entry_title='" << title
+          << "' ,Entry_year=" << year
+          << " ,Entry_format='" << format
+          << "' ,Entry_condition='" << condition
+          << "' ,Entry_label='" << label
+          << "' ,Collection_ID=" << cid
           << " WHERE Entry_ID=" << eid;
       if (!mysql_query(f->getConnection(), sql.str().c_str()))
       {
@@ -454,8 +454,8 @@ void TrackMenu(int eid, Functions* f)
       cout << "\nEnter Track length: ";
       cin >> length;
       sql << "UPDATE Track "
-          << " SET Track_title=" << title
-          << " ,Track_length=" << length
+          << " SET Track_title='" << title
+          << "' ,Track_length=" << length
           << " WHERE Track_ID=" << tid;
       if (!mysql_query(f->getConnection(), sql.str().c_str()))
       {
@@ -541,8 +541,8 @@ void ArtistMenu(int eid, Functions* f)
       cin.ignore();
       getline(cin,name);
       sql << "UPDATE Artist "
-          << " SET Artist_name=" << name
-          << " WHERE Artist_ID=" << aid;
+          << " SET Artist_name='" << name
+          << "' WHERE Artist_ID=" << aid;
       if (!mysql_query(f->getConnection(), sql.str().c_str()))
       {
         cout << "\nSuccess!";
@@ -608,8 +608,8 @@ void ArtistMembersMenu(int aid, Functions* f)
       cin.ignore();
       getline(cin,newname);
       sql << "UPDATE Artist_members "
-          << " SET Member_name=" << newname
-          << " WHERE Member_name=" << name;
+          << " SET Member_name='" << newname
+          << "' WHERE Member_name='" << name << "'";
       if (!mysql_query(f->getConnection(), sql.str().c_str()))
       {
         cout << "\nSuccess!";
@@ -676,8 +676,8 @@ void EntryGenreMenu(int eid, Functions* f)
       cin.ignore();
       getline(cin,newgenre);
       sql << "UPDATE Entry_Genre "
-          << " SET Genre=" << newgenre
-          << " WHERE Genre=" << genre;
+          << " SET Genre='" << newgenre
+          << "' WHERE Genre='" << genre << "'";
       if (!mysql_query(f->getConnection(), sql.str().c_str()))
       {
         cout << "\nSuccess!";
@@ -743,8 +743,8 @@ void TrackGenreMenu(int tid, Functions* f)
       cin.ignore();
       getline(cin,newgenre);
       sql << "UPDATE Track_Genre "
-          << " SET Genre=" << newgenre
-          << " WHERE Genre=" << genre;
+          << " SET Genre='" << newgenre
+          << "' WHERE Genre='" << genre << "'";
       if (!mysql_query(f->getConnection(), sql.str().c_str()))
       {
         cout << "\nSuccess!";
